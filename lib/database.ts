@@ -6,8 +6,6 @@ export interface Category {
   slug: string
   description: string | null
   image_url: string | null
-  is_active: boolean
-  sort_order: number
   created_at: string
   updated_at: string
 }
@@ -22,15 +20,15 @@ export interface Product {
   price: number
   compare_at_price: number | null
   sku: string | null
-  stock_quantity: number
+  inventory_quantity: number
   low_stock_threshold: number
   weight: number | null
   dimensions: string | null
-  images: string[]
-  features: string[]
+  product_images: Array<{ id: string; image_url: string; alt_text?: string; sort_order: number }>
+  tags: string[]
   specifications: Record<string, any>
-  is_featured: boolean
-  is_active: boolean
+  featured: boolean
+  status: string
   meta_title: string | null
   meta_description: string | null
   created_at: string
@@ -41,11 +39,7 @@ export interface Product {
 export async function getCategories(): Promise<Category[]> {
   const supabase = createClient()
 
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .eq("is_active", true)
-    .order("sort_order", { ascending: true })
+  const { data, error } = await supabase.from("categories").select("*").order("name", { ascending: true })
 
   if (error) {
     console.error("Error fetching categories:", error)
@@ -58,7 +52,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const supabase = createClient()
 
-  const { data, error } = await supabase.from("categories").select("*").eq("slug", slug).eq("is_active", true).single()
+  const { data, error } = await supabase.from("categories").select("*").eq("slug", slug).single()
 
   if (error) {
     console.error("Error fetching category:", error)
@@ -88,13 +82,19 @@ export async function getProductsByCategory(
         id,
         name,
         slug
+      ),
+      product_images (
+        id,
+        image_url,
+        alt_text,
+        sort_order
       )
     `)
     .eq("category_id", categoryId)
-    .eq("is_active", true)
+    .eq("status", "active")
 
   if (options.featured !== undefined) {
-    query = query.eq("is_featured", options.featured)
+    query = query.eq("featured", options.featured)
   }
 
   if (options.sortBy) {
@@ -134,10 +134,16 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         id,
         name,
         slug
+      ),
+      product_images (
+        id,
+        image_url,
+        alt_text,
+        sort_order
       )
     `)
     .eq("slug", slug)
-    .eq("is_active", true)
+    .eq("status", "active")
     .single()
 
   if (error) {
@@ -159,10 +165,16 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
         id,
         name,
         slug
+      ),
+      product_images (
+        id,
+        image_url,
+        alt_text,
+        sort_order
       )
     `)
-    .eq("is_featured", true)
-    .eq("is_active", true)
+    .eq("featured", true)
+    .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(limit)
 
@@ -192,9 +204,15 @@ export async function searchProducts(
         id,
         name,
         slug
+      ),
+      product_images (
+        id,
+        image_url,
+        alt_text,
+        sort_order
       )
     `)
-    .eq("is_active", true)
+    .eq("status", "active")
     .or(`name.ilike.%${query}%,description.ilike.%${query}%,short_description.ilike.%${query}%`)
 
   if (options.categoryId) {
