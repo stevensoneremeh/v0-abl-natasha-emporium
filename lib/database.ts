@@ -52,14 +52,28 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const supabase = createClient()
 
-  const { data, error } = await supabase.from("categories").select("*").eq("slug", slug).single()
+  console.log("[v0] Fetching category with slug:", slug)
 
-  if (error) {
-    console.error("Error fetching category:", error)
+  const { data: checkData, error: checkError } = await supabase.from("categories").select("*").eq("slug", slug)
+
+  if (checkError) {
+    console.error("[v0] Error checking category:", checkError)
     return null
   }
 
-  return data
+  console.log("[v0] Found categories with slug:", checkData?.length || 0)
+
+  if (!checkData || checkData.length === 0) {
+    console.log("[v0] No category found with slug:", slug)
+    return null
+  }
+
+  if (checkData.length > 1) {
+    console.warn("[v0] Multiple categories found with slug:", slug, "- returning first one")
+    return checkData[0]
+  }
+
+  return checkData[0]
 }
 
 export async function getProductsByCategory(

@@ -63,7 +63,7 @@ async function CategoryContent({ params, searchParams }: CategoryPageProps) {
       ? [Math.min(...allProducts.map((p) => p.price)), Math.max(...allProducts.map((p) => p.price))]
       : [0, 1000000]
 
-  const availableFeatures = Array.from(new Set(allProducts.flatMap((p) => p.features || []))).sort()
+  const availableFeatures = Array.from(new Set(allProducts.flatMap((p) => p.tags || []))).sort()
 
   const viewMode = searchParams.view || "grid"
 
@@ -108,7 +108,7 @@ async function CategoryContent({ params, searchParams }: CategoryPageProps) {
 
           <div className="flex items-center gap-4 mt-6">
             <Badge className="bg-luxury-gold text-luxury-navy">{products.length} Products</Badge>
-            {allProducts.some((p) => p.is_featured) && (
+            {allProducts.some((p) => p.featured) && (
               <Badge variant="outline" className="border-luxury-cream text-luxury-cream">
                 Featured Available
               </Badge>
