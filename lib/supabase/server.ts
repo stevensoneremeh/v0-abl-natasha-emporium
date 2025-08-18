@@ -1,4 +1,5 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
+import "server-only"
+import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { cache } from "react"
 
@@ -11,8 +12,6 @@ export const isSupabaseConfigured =
 
 // Create a cached version of the Supabase client for Server Components
 export const createClient = cache(() => {
-  const cookieStore = cookies()
-
   if (!isSupabaseConfigured) {
     console.warn("Supabase environment variables are not set. Using dummy client.")
     return {
@@ -21,10 +20,46 @@ export const createClient = cache(() => {
           eq: () => Promise.resolve({ data: [], error: null }),
           order: () => Promise.resolve({ data: [], error: null }),
           limit: () => Promise.resolve({ data: [], error: null }),
+          single: () => Promise.resolve({ data: null, error: null }),
         }),
+        insert: () => Promise.resolve({ data: null, error: null }),
+        update: () => Promise.resolve({ data: null, error: null }),
+        delete: () => Promise.resolve({ data: null, error: null }),
       }),
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        signInWithPassword: () => Promise.resolve({ data: null, error: null }),
+        signUp: () => Promise.resolve({ data: null, error: null }),
+        signOut: () => Promise.resolve({ error: null }),
+      },
+      storage: {
+        from: () => ({
+          upload: () => Promise.resolve({ data: null, error: null }),
+          getPublicUrl: () => ({ data: { publicUrl: "" } }),
+        }),
+      },
     }
   }
 
-  return createServerComponentClient({ cookies: () => cookieStore })
+  const cookieStore = cookies()
+
+  return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll()
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
+        } catch {
+          // The `setAll` method was called from a Server Component.
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
+        }
+      },
+    },
+  })
 })
+
+// Helper for server actions
+export const createSupabaseServerClient = createClient
