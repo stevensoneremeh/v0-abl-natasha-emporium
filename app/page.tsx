@@ -24,6 +24,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import { MobileNavigation } from "@/components/mobile-navigation"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
+import { VideoHero } from "@/components/video-hero"
+import { StructuredData } from "@/components/structured-data"
+import { LazyLoadWrapper } from "@/components/lazy-load-wrapper"
 
 const categories = [
   {
@@ -176,13 +179,42 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-luxury-cream pb-16 md:pb-0">
+      <StructuredData
+        type="WebSite"
+        data={{
+          name: "ABL NATASHA EMPORIUM",
+          url: typeof window !== "undefined" ? window.location.origin : "https://abl-natasha-emporium.vercel.app",
+          description: "Luxury lifestyle collection featuring real estate, wines, cars, hair products, and fragrances.",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${typeof window !== "undefined" ? window.location.origin : "https://abl-natasha-emporium.vercel.app"}/search?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }}
+      />
+
+      <StructuredData
+        type="BreadcrumbList"
+        data={{
+          items: [
+            {
+              name: "Home",
+              url: typeof window !== "undefined" ? window.location.origin : "https://abl-natasha-emporium.vercel.app",
+            },
+          ],
+        }}
+      />
+
       <AnimatePresence>
         {showAnnouncement && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-luxury-gold text-luxury-navy py-3 px-4 text-center relative overflow-hidden"
+            className="bg-luxury-gold text-luxury-navy py-3 px-4 text-center relative overflow-hidden z-50"
           >
             <motion.div
               initial={{ x: "100%" }}
@@ -207,7 +239,8 @@ export default function HomePage() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="bg-luxury-navy shadow-lg sticky top-0 z-50"
+        className="bg-luxury-navy/95 backdrop-blur-sm shadow-lg fixed top-0 left-0 right-0 z-50"
+        style={{ top: showAnnouncement ? "auto" : "0" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -256,298 +289,308 @@ export default function HomePage() {
         </div>
       </motion.header>
 
-      <section className="relative bg-luxury-navy text-luxury-cream py-20 lg:py-32 overflow-hidden">
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-luxury-navy via-luxury-charcoal to-luxury-navy opacity-90"
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-        />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h1
-            className="font-playfair text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Luxury
-            <motion.span
-              className="text-luxury-gold block"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+      <VideoHero
+        videoSrc="/luxury-lifestyle-video-background.png"
+        posterImage="/luxury-lifestyle-hero.png"
+        overlayImages={[
+          {
+            src: "/luxury-real-estate-showcase.png",
+            alt: "Luxury Real Estate",
+            className: "top-20 left-10 hidden lg:block",
+          },
+          {
+            src: "/premium-wine-display.png",
+            alt: "Premium Wines",
+            className: "top-32 right-16 hidden lg:block",
+          },
+          {
+            src: "/luxury-car-showcase.png",
+            alt: "Luxury Cars",
+            className: "bottom-32 left-20 hidden xl:block",
+          },
+        ]}
+        title="Luxury Redefined"
+        subtitle="Discover an exclusive collection of premium real estate, vintage wines, exotic automobiles, luxury hair products, and exquisite fragrances."
+        primaryCTA={{
+          text: "Explore Collection",
+          href: "#featured-categories",
+        }}
+        secondaryCTA={{
+          text: "View Real Estate",
+          href: "/categories/real-estate",
+        }}
+      />
+
+      <LazyLoadWrapper>
+        <section id="featured-categories" className="py-16 lg:py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              {...fadeInUp}
+              viewport={{ once: true }}
+              whileInView="animate"
+              initial="initial"
             >
-              Redefined
-            </motion.span>
-          </motion.h1>
-          <motion.p
-            className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed text-luxury-cream/90"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-          >
-            Discover an exclusive collection of premium real estate, vintage wines, exotic automobiles, luxury hair
-            products, and exquisite fragrances.
-          </motion.p>
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
-          >
-            <motion.div {...scaleOnHover}>
-              <Button className="btn-luxury text-lg px-8 py-4">
-                Explore Collection
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold text-luxury-navy mb-4">
+                Premium Categories
+              </h2>
+              <p className="text-lg text-luxury-charcoal max-w-2xl mx-auto">
+                Explore our curated selection of luxury products across multiple categories
+              </p>
             </motion.div>
-            <motion.div {...scaleOnHover}>
-              <Button variant="outline" className="btn-luxury-outline text-lg px-8 py-4 bg-transparent">
-                View Real Estate
-              </Button>
+
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+            >
+              {categories.map((category, index) => {
+                const IconComponent = category.icon
+                return (
+                  <motion.div
+                    key={category.slug}
+                    variants={fadeInUp}
+                    whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                  >
+                    <Card className="card-luxury group cursor-pointer overflow-hidden">
+                      <div className="relative h-48 overflow-hidden">
+                        <Image
+                          src={category.image || "/placeholder.svg"}
+                          alt={category.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-luxury-navy/20 group-hover:bg-luxury-navy/10 transition-colors duration-300"></div>
+                        <motion.div
+                          className="absolute top-4 left-4"
+                          whileHover={{ rotate: 360, transition: { duration: 0.5 } }}
+                        >
+                          <div className="bg-luxury-gold/90 p-2 rounded-full">
+                            <IconComponent className="h-5 w-5 text-luxury-navy" />
+                          </div>
+                        </motion.div>
+                      </div>
+                      <CardContent className="p-6">
+                        <h3 className="font-playfair text-xl font-bold text-luxury-navy mb-2">{category.name}</h3>
+                        <p className="text-luxury-charcoal mb-4">{category.description}</p>
+                        <Button
+                          variant="ghost"
+                          className="text-luxury-gold hover:text-luxury-navy hover:bg-luxury-gold p-0 h-auto font-semibold group-hover:translate-x-2 transition-transform duration-300"
+                        >
+                          Explore {category.name}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>
+      </LazyLoadWrapper>
 
-      <section className="py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            {...fadeInUp}
-            viewport={{ once: true }}
-            whileInView="animate"
-            initial="initial"
-          >
-            <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold text-luxury-navy mb-4">
-              Premium Categories
-            </h2>
-            <p className="text-lg text-luxury-charcoal max-w-2xl mx-auto">
-              Explore our curated selection of luxury products across multiple categories
-            </p>
-          </motion.div>
+      <LazyLoadWrapper>
+        <section className="py-16 lg:py-24 bg-white">
+          {featuredProducts.map((product) => (
+            <StructuredData
+              key={product.id}
+              type="Product"
+              data={{
+                name: product.name,
+                description: `${product.category} - ${product.name}`,
+                image: product.image,
+                brand: "ABL NATASHA EMPORIUM",
+                price: product.price.replace(/[₦,]/g, ""),
+                priceCurrency: "NGN",
+                inStock: true,
+                rating: product.rating,
+                reviewCount: product.reviews,
+              }}
+            />
+          ))}
 
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-          >
-            {categories.map((category, index) => {
-              const IconComponent = category.icon
-              return (
-                <motion.div
-                  key={category.slug}
-                  variants={fadeInUp}
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              {...fadeInUp}
+              viewport={{ once: true }}
+              whileInView="animate"
+              initial="initial"
+            >
+              <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold text-luxury-navy mb-4">
+                Featured Products
+              </h2>
+              <p className="text-lg text-luxury-charcoal max-w-2xl mx-auto">
+                Handpicked luxury items from our exclusive collection
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+            >
+              {featuredProducts.map((product, index) => (
+                <motion.div key={product.id} variants={fadeInUp} whileHover={{ y: -12, transition: { duration: 0.3 } }}>
                   <Card className="card-luxury group cursor-pointer overflow-hidden">
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-64 overflow-hidden">
                       <Image
-                        src={category.image || "/placeholder.svg"}
-                        alt={category.name}
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-luxury-navy/20 group-hover:bg-luxury-navy/10 transition-colors duration-300"></div>
                       <motion.div
-                        className="absolute top-4 left-4"
-                        whileHover={{ rotate: 360, transition: { duration: 0.5 } }}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: index * 0.1 + 0.5 }}
                       >
-                        <div className="bg-luxury-gold/90 p-2 rounded-full">
-                          <IconComponent className="h-5 w-5 text-luxury-navy" />
-                        </div>
+                        <Badge className="absolute top-4 left-4 bg-luxury-gold text-luxury-navy font-semibold">
+                          {product.badge}
+                        </Badge>
                       </motion.div>
                     </div>
                     <CardContent className="p-6">
-                      <h3 className="font-playfair text-xl font-bold text-luxury-navy mb-2">{category.name}</h3>
-                      <p className="text-luxury-charcoal mb-4">{category.description}</p>
-                      <Button
-                        variant="ghost"
-                        className="text-luxury-gold hover:text-luxury-navy hover:bg-luxury-gold p-0 h-auto font-semibold group-hover:translate-x-2 transition-transform duration-300"
-                      >
-                        Explore {category.name}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-1 mb-2">
+                        {[...Array(product.rating)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: index * 0.1 + 0.7 + i * 0.1 }}
+                          >
+                            <Star className="h-4 w-4 fill-luxury-gold text-luxury-gold" />
+                          </motion.div>
+                        ))}
+                        <span className="text-sm text-luxury-charcoal ml-2">({product.reviews})</span>
+                      </div>
+                      <h3 className="font-semibold text-luxury-navy mb-2 line-clamp-2">{product.name}</h3>
+                      <p className="text-sm text-luxury-charcoal mb-3">{product.category}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-lg text-luxury-navy">{product.price}</span>
+                        {product.originalPrice && (
+                          <span className="text-sm text-luxury-charcoal line-through">{product.originalPrice}</span>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
-              )
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            {...fadeInUp}
-            viewport={{ once: true }}
-            whileInView="animate"
-            initial="initial"
-          >
-            <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold text-luxury-navy mb-4">
-              Featured Products
-            </h2>
-            <p className="text-lg text-luxury-charcoal max-w-2xl mx-auto">
-              Handpicked luxury items from our exclusive collection
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-          >
-            {featuredProducts.map((product, index) => (
-              <motion.div key={product.id} variants={fadeInUp} whileHover={{ y: -12, transition: { duration: 0.3 } }}>
-                <Card className="card-luxury group cursor-pointer overflow-hidden">
-                  <div className="relative h-64 overflow-hidden">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: index * 0.1 + 0.5 }}>
-                      <Badge className="absolute top-4 left-4 bg-luxury-gold text-luxury-navy font-semibold">
-                        {product.badge}
-                      </Badge>
-                    </motion.div>
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(product.rating)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: index * 0.1 + 0.7 + i * 0.1 }}
-                        >
-                          <Star className="h-4 w-4 fill-luxury-gold text-luxury-gold" />
-                        </motion.div>
-                      ))}
-                      <span className="text-sm text-luxury-charcoal ml-2">({product.reviews})</span>
-                    </div>
-                    <h3 className="font-semibold text-luxury-navy mb-2 line-clamp-2">{product.name}</h3>
-                    <p className="text-sm text-luxury-charcoal mb-3">{product.category}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-lg text-luxury-navy">{product.price}</span>
-                      {product.originalPrice && (
-                        <span className="text-sm text-luxury-charcoal line-through">{product.originalPrice}</span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            className="text-center mt-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.div {...scaleOnHover}>
-              <Button className="btn-luxury text-lg px-8 py-4">
-                View All Products
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="py-16 lg:py-24 bg-luxury-cream">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            {...fadeInUp}
-            viewport={{ once: true }}
-            whileInView="animate"
-            initial="initial"
-          >
-            <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold text-luxury-navy mb-4">
-              What Our Clients Say
-            </h2>
-            <p className="text-lg text-luxury-charcoal max-w-2xl mx-auto">
-              Hear from our satisfied customers about their luxury experiences
-            </p>
-          </motion.div>
-
-          <div className="relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTestimonial}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-2xl p-8 shadow-lg"
-              >
-                <div className="flex items-center gap-1 mb-4 justify-center">
-                  {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-luxury-gold text-luxury-gold" />
-                  ))}
-                </div>
-                <blockquote className="text-lg text-luxury-charcoal mb-6 text-center italic">
-                  "{testimonials[currentTestimonial].content}"
-                </blockquote>
-                <div className="flex items-center justify-center gap-4">
-                  <Image
-                    src={testimonials[currentTestimonial].image || "/placeholder.svg"}
-                    alt={testimonials[currentTestimonial].name}
-                    width={60}
-                    height={60}
-                    className="rounded-full"
-                  />
-                  <div className="text-center">
-                    <div className="font-semibold text-luxury-navy">{testimonials[currentTestimonial].name}</div>
-                    <div className="text-sm text-luxury-charcoal">{testimonials[currentTestimonial].role}</div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            <div className="flex justify-center gap-4 mt-8">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
-                className="bg-luxury-gold text-luxury-navy p-2 rounded-full hover:bg-luxury-gold/80 transition-colors"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)}
-                className="bg-luxury-gold text-luxury-navy p-2 rounded-full hover:bg-luxury-gold/80 transition-colors"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </motion.button>
-            </div>
-
-            <div className="flex justify-center gap-2 mt-4">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentTestimonial ? "bg-luxury-gold" : "bg-luxury-charcoal/30"
-                  }`}
-                />
               ))}
+            </motion.div>
+
+            <motion.div
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <motion.div {...scaleOnHover}>
+                <Button className="btn-luxury text-lg px-8 py-4">
+                  View All Products
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+      </LazyLoadWrapper>
+
+      <LazyLoadWrapper>
+        <section className="py-16 lg:py-24 bg-luxury-cream">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              {...fadeInUp}
+              viewport={{ once: true }}
+              whileInView="animate"
+              initial="initial"
+            >
+              <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold text-luxury-navy mb-4">
+                What Our Clients Say
+              </h2>
+              <p className="text-lg text-luxury-charcoal max-w-2xl mx-auto">
+                Hear from our satisfied customers about their luxury experiences
+              </p>
+            </motion.div>
+
+            <div className="relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentTestimonial}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-white rounded-2xl p-8 shadow-lg"
+                >
+                  <div className="flex items-center gap-1 mb-4 justify-center">
+                    {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-luxury-gold text-luxury-gold" />
+                    ))}
+                  </div>
+                  <blockquote className="text-lg text-luxury-charcoal mb-6 text-center italic">
+                    "{testimonials[currentTestimonial].content}"
+                  </blockquote>
+                  <div className="flex items-center justify-center gap-4">
+                    <Image
+                      src={testimonials[currentTestimonial].image || "/placeholder.svg"}
+                      alt={testimonials[currentTestimonial].name}
+                      width={60}
+                      height={60}
+                      className="rounded-full"
+                    />
+                    <div className="text-center">
+                      <div className="font-semibold text-luxury-navy">{testimonials[currentTestimonial].name}</div>
+                      <div className="text-sm text-luxury-charcoal">{testimonials[currentTestimonial].role}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              <div className="flex justify-center gap-4 mt-8">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() =>
+                    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+                  }
+                  className="bg-luxury-gold text-luxury-navy p-2 rounded-full hover:bg-luxury-gold/80 transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)}
+                  className="bg-luxury-gold text-luxury-navy p-2 rounded-full hover:bg-luxury-gold/80 transition-colors"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </motion.button>
+              </div>
+
+              <div className="flex justify-center gap-2 mt-4">
+                {testimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentTestimonial(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === currentTestimonial ? "bg-luxury-gold" : "bg-luxury-charcoal/30"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </LazyLoadWrapper>
 
       <motion.section
         className="py-16 lg:py-24 luxury-gradient text-luxury-cream"

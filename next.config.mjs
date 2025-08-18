@@ -14,6 +14,24 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "plus.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "supabase.com",
+      },
+    ],
   },
   async headers() {
     return [
@@ -30,11 +48,15 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
+            value: "strict-origin-when-cross-origin",
           },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
           },
         ],
       },
@@ -47,10 +69,21 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/_next/static/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
     ]
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
+    optimizeCss: true,
+    scrollRestoration: true,
     turbo: {
       rules: {
         "*.svg": {
@@ -63,6 +96,7 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
+  output: "standalone",
 }
 
 export default nextConfig

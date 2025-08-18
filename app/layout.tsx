@@ -6,6 +6,7 @@ import { CartProvider } from "@/contexts/cart-context"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Suspense } from "react"
+import { safeMetadataBase } from "@/lib/utils/metadata"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -19,7 +20,7 @@ const inter = Inter({
   variable: "--font-inter",
 })
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://abl-natasha-emporium.vercel.app"
+const baseUrl = safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL).toString()
 
 export const metadata: Metadata = {
   title: "ABL NATASHA EMPORIUM - Luxury Lifestyle Collection",
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(baseUrl),
+  metadataBase: safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL),
   alternates: {
     canonical: "/",
   },
@@ -76,9 +77,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
+  // verification: {
+  //   google: "your-google-verification-code",
+  // },
 }
 
 export default function RootLayout({
@@ -97,7 +98,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: "ABL NATASHA EMPORIUM",
               url: baseUrl,
-              logo: "/og-image.jpg",
+              logo: `${baseUrl}/og-image.jpg`,
               description:
                 "Luxury lifestyle collection featuring real estate, wines, cars, hair products, and fragrances.",
               sameAs: [
@@ -105,9 +106,22 @@ export default function RootLayout({
                 "https://instagram.com/ablnatasha",
                 "https://twitter.com/ablnatasha",
               ],
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "customer service",
+                availableLanguage: "English",
+              },
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "NG",
+              },
             }),
           }}
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="//vercel.live" />
+        <link rel="dns-prefetch" href="//vitals.vercel-insights.com" />
       </head>
       <body className="font-sans bg-luxury-cream text-luxury-navy min-h-screen">
         <Suspense fallback={null}>
