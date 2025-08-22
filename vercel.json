@@ -5,7 +5,8 @@
     }
   },
   "images": {
-    "domains": ["images.unsplash.com", "plus.unsplash.com", "supabase.com", "*.supabase.co"]
+    "domains": ["images.unsplash.com", "plus.unsplash.com", "supabase.com", "*.supabase.co"],
+    "sizes": [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840]
   },
   "headers": [
     {
@@ -42,7 +43,7 @@
   "redirects": [
     {
       "source": "/admin",
-      "destination": "/admin/dashboard",
+      "destination": "/admin",
       "permanent": false
     }
   ],

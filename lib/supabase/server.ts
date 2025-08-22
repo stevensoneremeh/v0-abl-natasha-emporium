@@ -1,5 +1,5 @@
 import "server-only"
-import { createServerClient } from "@supabase/ssr"
+import { createServerClient as createSupabaseServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { cache } from "react"
 
@@ -43,7 +43,7 @@ export const createClient = cache(() => {
 
   const cookieStore = cookies()
 
-  return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  return createSupabaseServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
@@ -61,5 +61,4 @@ export const createClient = cache(() => {
   })
 })
 
-// Helper for server actions
-export const createSupabaseServerClient = createClient
+export const createServerClient = createClient
