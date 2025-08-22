@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server"
 import type { Product } from "@/lib/database"
+import { createClient } from "@/lib/supabase/server"
 
 export interface CartItem {
   id: string
@@ -42,9 +42,7 @@ export interface Order {
   notes: string | null
   tracking_number: string | null
   shipped_at: string | null
-  delivered_at: string | null
-  created_at: string
-  updated_at: string
+  delivered_at: string
 }
 
 export interface OrderItem {
@@ -142,275 +140,143 @@ export class CartManager {
   }
 }
 
-// Server-side cart operations (for authenticated users)
-export async function getCartItems(userId: string): Promise<CartItem[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from("cart_items")
-    .select(`
-      *,
-      products (
-        id,
-        name,
-        slug,
-        price,
-        images,
-        stock_quantity,
-        is_active
-      )
-    `)
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-
-  if (error) {
-    console.error("Error fetching cart items:", error)
-    return []
-  }
-
-  return data || []
-}
-
-export async function addToCart(
-  userId: string,
-  productId: string,
-  quantity = 1,
-  price: number,
-): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  // Check if item already exists in cart
-  const { data: existingItem } = await supabase
-    .from("cart_items")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("product_id", productId)
-    .single()
-
-  if (existingItem) {
-    // Update quantity
-    const { error } = await supabase
-      .from("cart_items")
-      .update({
-        quantity: existingItem.quantity + quantity,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", existingItem.id)
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-  } else {
-    // Add new item
-    const { error } = await supabase.from("cart_items").insert({
-      user_id: userId,
-      product_id: productId,
-      quantity,
-      price,
-    })
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-  }
-
-  return { success: true }
-}
-
-export async function updateCartItem(
-  cartItemId: string,
-  quantity: number,
-): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  if (quantity <= 0) {
-    const { error } = await supabase.from("cart_items").delete().eq("id", cartItemId)
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-  } else {
-    const { error } = await supabase
-      .from("cart_items")
-      .update({
-        quantity,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", cartItemId)
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-  }
-
-  return { success: true }
-}
-
-export async function removeFromCart(cartItemId: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  const { error } = await supabase.from("cart_items").delete().eq("id", cartItemId)
-
-  if (error) {
-    return { success: false, error: error.message }
-  }
-
-  return { success: true }
-}
-
-export async function clearCart(userId: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  const { error } = await supabase.from("cart_items").delete().eq("user_id", userId)
-
-  if (error) {
-    return { success: false, error: error.message }
-  }
-
-  return { success: true }
-}
-
-export async function createOrder(orderData: {
-  userId?: string
-  items: CartItem[]
-  shippingInfo: {
-    name: string
-    email: string
-    phone?: string
-    address: string
-    city: string
-    country: string
-    postalCode?: string
-  }
-  billingInfo: {
-    name: string
-    email: string
-    phone?: string
-    address: string
-    city: string
-    country: string
-    postalCode?: string
-  }
-  paymentMethod?: string
-  notes?: string
-}): Promise<{ success: boolean; orderId?: string; orderNumber?: string; error?: string }> {
-  const supabase = createClient()
-
-  // Calculate totals
-  const subtotal = CartManager.getCartTotal(orderData.items)
-  const taxAmount = subtotal * 0.075 // 7.5% VAT
-  const shippingAmount = subtotal >= 50000 ? 0 : 2500 // Free shipping over ₦50,000
-  const totalAmount = subtotal + taxAmount + shippingAmount
-
-  // Generate order number
-  const orderNumber = `ABL${Date.now().toString().slice(-8)}`
-
-  try {
-    // Create order
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        user_id: orderData.userId || null,
-        order_number: orderNumber,
-        subtotal,
-        tax_amount: taxAmount,
-        shipping_amount: shippingAmount,
-        total_amount: totalAmount,
-        currency: "NGN",
-        payment_method: orderData.paymentMethod,
-        shipping_name: orderData.shippingInfo.name,
-        shipping_email: orderData.shippingInfo.email,
-        shipping_phone: orderData.shippingInfo.phone,
-        shipping_address: orderData.shippingInfo.address,
-        shipping_city: orderData.shippingInfo.city,
-        shipping_country: orderData.shippingInfo.country,
-        shipping_postal_code: orderData.shippingInfo.postalCode,
-        billing_name: orderData.billingInfo.name,
-        billing_email: orderData.billingInfo.email,
-        billing_phone: orderData.billingInfo.phone,
-        billing_address: orderData.billingInfo.address,
-        billing_city: orderData.billingInfo.city,
-        billing_country: orderData.billingInfo.country,
-        billing_postal_code: orderData.billingInfo.postalCode,
-        notes: orderData.notes,
-      })
-      .select()
-      .single()
-
-    if (orderError) {
-      throw new Error(orderError.message)
-    }
-
-    // Create order items
-    const orderItems = orderData.items.map((item) => ({
-      order_id: order.id,
-      product_id: item.product_id,
-      product_name: item.products?.name || "Unknown Product",
-      product_sku: item.products?.sku,
-      quantity: item.quantity,
-      unit_price: item.price,
-      total_price: item.price * item.quantity,
-    }))
-
-    const { error: itemsError } = await supabase.from("order_items").insert(orderItems)
-
-    if (itemsError) {
-      throw new Error(itemsError.message)
-    }
-
-    // Clear cart for authenticated users
-    if (orderData.userId) {
-      await clearCart(orderData.userId)
-    }
-
-    return {
-      success: true,
-      orderId: order.id,
-      orderNumber: order.order_number,
-    }
-  } catch (error) {
-    console.error("Error creating order:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create order",
-    }
-  }
-}
-
-export async function updateOrderPaymentStatus(
-  orderNumber: string,
-  paymentStatus: "pending" | "paid" | "failed" | "refunded",
-  paymentReference?: string,
-): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  const updateData: any = {
-    payment_status: paymentStatus,
-    updated_at: new Date().toISOString(),
-  }
-
-  if (paymentReference) {
-    updateData.payment_reference = paymentReference
-  }
-
-  if (paymentStatus === "paid") {
-    updateData.status = "processing"
-  }
-
-  const { error } = await supabase.from("orders").update(updateData).eq("order_number", orderNumber)
-
-  if (error) {
-    console.error("Error updating order payment status:", error)
-    return { success: false, error: error.message }
-  }
-
-  return { success: true }
-}
-
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
     currency: "NGN",
     minimumFractionDigits: 0,
   }).format(amount)
+}
+
+export async function createOrder(orderData: {
+  user_id?: string | null
+  shipping_name: string
+  shipping_email: string
+  shipping_phone?: string
+  shipping_address: string
+  shipping_city: string
+  shipping_country: string
+  shipping_postal_code?: string
+  billing_name: string
+  billing_email: string
+  billing_phone?: string
+  billing_address: string
+  billing_city: string
+  billing_country: string
+  billing_postal_code?: string
+  items: Array<{
+    product_id: string
+    product_name: string
+    quantity: number
+    unit_price: number
+  }>
+  subtotal: number
+  tax_amount?: number
+  shipping_amount?: number
+  total_amount: number
+  notes?: string
+}): Promise<{ order: Order; error?: string }> {
+  try {
+    const supabase = createClient()
+
+    // Generate order number
+    const orderNumber = `ABL-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+
+    // Create order
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .insert({
+        user_id: orderData.user_id || null,
+        order_number: orderNumber,
+        status: "pending",
+        payment_status: "pending",
+        subtotal: orderData.subtotal,
+        tax_amount: orderData.tax_amount || 0,
+        shipping_amount: orderData.shipping_amount || 0,
+        total_amount: orderData.total_amount,
+        currency: "NGN",
+        shipping_name: orderData.shipping_name,
+        shipping_email: orderData.shipping_email,
+        shipping_phone: orderData.shipping_phone,
+        shipping_address: orderData.shipping_address,
+        shipping_city: orderData.shipping_city,
+        shipping_country: orderData.shipping_country,
+        shipping_postal_code: orderData.shipping_postal_code,
+        billing_name: orderData.billing_name,
+        billing_email: orderData.billing_email,
+        billing_phone: orderData.billing_phone,
+        billing_address: orderData.billing_address,
+        billing_city: orderData.billing_city,
+        billing_country: orderData.billing_country,
+        billing_postal_code: orderData.billing_postal_code,
+        notes: orderData.notes,
+      })
+      .select()
+      .single()
+
+    if (orderError) {
+      return { order: {} as Order, error: orderError.message }
+    }
+
+    // Create order items
+    const orderItems = orderData.items.map((item) => ({
+      order_id: order.id,
+      product_id: item.product_id,
+      product_name: item.product_name,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      total_price: item.unit_price * item.quantity,
+    }))
+
+    const { error: itemsError } = await supabase.from("order_items").insert(orderItems)
+
+    if (itemsError) {
+      return { order: {} as Order, error: itemsError.message }
+    }
+
+    return { order }
+  } catch (error) {
+    return { order: {} as Order, error: "Failed to create order" }
+  }
+}
+
+export async function updateOrderPaymentStatus(
+  orderId: string,
+  paymentStatus: "pending" | "paid" | "failed" | "refunded",
+  paymentReference?: string,
+  paymentMethod?: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = createClient()
+
+    const updateData: any = {
+      payment_status: paymentStatus,
+      updated_at: new Date().toISOString(),
+    }
+
+    if (paymentReference) {
+      updateData.payment_reference = paymentReference
+    }
+
+    if (paymentMethod) {
+      updateData.payment_method = paymentMethod
+    }
+
+    // Update order status based on payment status
+    if (paymentStatus === "paid") {
+      updateData.status = "processing"
+    } else if (paymentStatus === "failed") {
+      updateData.status = "cancelled"
+    }
+
+    const { error } = await supabase.from("orders").update(updateData).eq("id", orderId)
+
+    if (error) {
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: "Failed to update payment status" }
+  }
 }

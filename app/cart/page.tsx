@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ShoppingCart, Plus, Minus, X, ArrowRight, ArrowLeft, Package } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
-import { formatCurrency } from "@/lib/cart"
+import { CartManager } from "@/lib/cart"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -99,7 +99,7 @@ export default function CartPage() {
                       <h3 className="font-semibold text-luxury-navy text-lg mb-2">
                         {item.products?.name || "Unknown Product"}
                       </h3>
-                      <p className="text-luxury-charcoal mb-4">{formatCurrency(item.price)} each</p>
+                      <p className="text-luxury-charcoal mb-4">{CartManager.formatCurrency(item.price)} each</p>
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -135,7 +135,9 @@ export default function CartPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="font-bold text-luxury-navy text-xl">{formatCurrency(item.price * item.quantity)}</p>
+                      <p className="font-bold text-luxury-navy text-xl">
+                        {CartManager.formatCurrency(item.price * item.quantity)}
+                      </p>
                       {item.products?.stock_quantity && item.products.stock_quantity < 10 && (
                         <Badge variant="secondary" className="mt-2">
                           {item.products.stock_quantity} left in stock
@@ -157,20 +159,20 @@ export default function CartPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>Subtotal ({itemCount} items)</span>
-                    <span>{formatCurrency(subtotal)}</span>
+                    <span>{CartManager.formatCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span>{shippingAmount === 0 ? "Free" : formatCurrency(shippingAmount)}</span>
+                    <span>{shippingAmount === 0 ? "Free" : CartManager.formatCurrency(shippingAmount)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tax (7.5%)</span>
-                    <span>{formatCurrency(taxAmount)}</span>
+                    <span>{CartManager.formatCurrency(taxAmount)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>{formatCurrency(totalAmount)}</span>
+                    <span>{CartManager.formatCurrency(totalAmount)}</span>
                   </div>
                 </div>
 
@@ -181,8 +183,8 @@ export default function CartPage() {
                 ) : (
                   <div className="bg-luxury-cream border border-luxury-gold/20 rounded-lg p-4">
                     <p className="text-luxury-charcoal">
-                      Add <span className="font-semibold">{formatCurrency(50000 - subtotal)}</span> more for free
-                      shipping
+                      Add <span className="font-semibold">{CartManager.formatCurrency(50000 - subtotal)}</span> more for
+                      free shipping
                     </p>
                   </div>
                 )}
