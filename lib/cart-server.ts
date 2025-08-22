@@ -121,3 +121,33 @@ export async function createOrder(orderData: {
     orderNumber: order.order_number,
   }
 }
+
+export async function updateOrderPaymentStatus(
+  orderId: string,
+  paymentStatus: "pending" | "paid" | "failed" | "refunded",
+  paymentReference?: string,
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = createClient()
+
+  const updateData: any = {
+    payment_status: paymentStatus,
+    updated_at: new Date().toISOString(),
+  }
+
+  if (paymentReference) {
+    updateData.payment_reference = paymentReference
+  }
+
+  if (paymentStatus === "paid") {
+    updateData.status = "processing"
+  }
+
+  const { error } = await supabase.from("orders").update(updateData).eq("id", orderId)
+
+  if (error) {
+    console.error("Error updating order payment status:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
+}

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Package, Truck, CreditCard, Download } from "lucide-react"
-import { formatCurrency } from "@/lib/cart"
+import { formatCurrency } from "@/lib/utils/currency"
 import Link from "next/link"
 import Image from "next/image"
 
