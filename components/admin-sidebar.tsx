@@ -17,10 +17,12 @@ import {
   Tag,
   Bell,
   LogOut,
+  Upload,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
+import { useAuth } from "@/lib/auth-context"
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -30,6 +32,7 @@ const navigation = [
   { name: "Categories", href: "/admin/categories", icon: Tag },
   { name: "Real Estate", href: "/admin/real-estate", icon: Home },
   { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Media", href: "/admin/media", icon: Upload },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ]
@@ -38,6 +41,7 @@ export function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState(5)
   const pathname = usePathname()
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -138,11 +142,11 @@ export function AdminSidebar() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-luxury-gold rounded-full flex items-center justify-center">
-                    <span className="text-luxury-navy font-bold text-sm">A</span>
+                    <span className="text-luxury-navy font-bold text-sm">{user?.email?.[0].toUpperCase() || "A"}</span>
                   </div>
                   <div className="ml-3">
                     <p className="text-sm font-medium text-luxury-cream">Admin User</p>
-                    <p className="text-xs text-luxury-cream/60">admin@ablnatasha.com</p>
+                    <p className="text-xs text-luxury-cream/60">{user?.email || "admin@ablnatasha.com"}</p>
                   </div>
                 </div>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -150,10 +154,7 @@ export function AdminSidebar() {
                     variant="ghost"
                     size="sm"
                     className="text-luxury-cream hover:text-luxury-gold"
-                    onClick={() => {
-                      // TODO: Implement logout functionality
-                      console.log("Logout clicked")
-                    }}
+                    onClick={signOut}
                   >
                     <LogOut className="h-4 w-4" />
                   </Button>

@@ -3,10 +3,12 @@ import type { Metadata } from "next"
 import { Playfair_Display, Inter } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
+import { AuthProvider } from "@/lib/auth-context"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Suspense } from "react"
 import { safeMetadataBase } from "@/lib/utils/metadata"
+import { ThemeProvider } from "next-themes"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -88,7 +90,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable} antialiased`}>
+    <html lang="en" className={`${playfair.variable} ${inter.variable} antialiased`} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -123,13 +125,17 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//vercel.live" />
         <link rel="dns-prefetch" href="//vitals.vercel-insights.com" />
       </head>
-      <body className="font-sans bg-luxury-cream text-luxury-navy min-h-screen">
+      <body className="font-sans bg-background text-foreground min-h-screen transition-colors duration-300">
         <Suspense fallback={null}>
-          <CartProvider>
-            {children}
-            <Analytics />
-            <SpeedInsights />
-          </CartProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange={false}>
+            <AuthProvider>
+              <CartProvider>
+                {children}
+                <Analytics />
+                <SpeedInsights />
+              </CartProvider>
+            </AuthProvider>
+          </ThemeProvider>
         </Suspense>
       </body>
     </html>

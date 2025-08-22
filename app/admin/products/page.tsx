@@ -29,7 +29,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const filteredProducts = allProducts.filter((product) => {
     if (searchParams.filter === "low-stock") {
-      return product.inventory_quantity <= product.low_stock_threshold
+      return product.stock_quantity <= product.low_stock_threshold
     }
     if (searchParams.category && searchParams.category !== "all") {
       return product.category_id === searchParams.category
@@ -101,17 +101,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           <Card key={product.id} className="card-luxury">
             <div className="relative h-48 overflow-hidden rounded-t-lg">
               <Image
-                src={product.product_images?.[0]?.image_url || "/placeholder.svg?height=200&width=300"}
+                src={product.images?.[0] || "/placeholder.svg?height=200&width=300"}
                 alt={product.name}
                 fill
                 className="object-cover"
               />
               <div className="absolute top-2 left-2 flex flex-col gap-1">
-                {product.featured && <Badge className="bg-luxury-gold text-luxury-navy text-xs">Featured</Badge>}
-                {product.inventory_quantity <= product.low_stock_threshold && (
+                {product.is_featured && <Badge className="bg-luxury-gold text-luxury-navy text-xs">Featured</Badge>}
+                {product.stock_quantity <= product.low_stock_threshold && (
                   <Badge className="bg-red-500 text-white text-xs">Low Stock</Badge>
                 )}
-                {product.status !== "active" && <Badge className="bg-gray-500 text-white text-xs">Inactive</Badge>}
+                {!product.is_active && <Badge className="bg-gray-500 text-white text-xs">Inactive</Badge>}
               </div>
             </div>
             <CardContent className="p-4">
@@ -120,7 +120,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <p className="text-sm text-luxury-charcoal">{product.categories?.name}</p>
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-luxury-navy">{formatCurrency(product.price)}</span>
-                  <span className="text-sm text-luxury-charcoal">Stock: {product.inventory_quantity}</span>
+                  <span className="text-sm text-luxury-charcoal">Stock: {product.stock_quantity}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-4">

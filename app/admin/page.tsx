@@ -14,13 +14,73 @@ import {
   Users,
   BarChart3,
 } from "lucide-react"
-import { getAdminStats, formatCurrency } from "@/lib/admin"
 import { AdminAnalyticsCharts } from "@/components/admin-analytics-charts"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
 
-export default async function AdminDashboard() {
-  const stats = await getAdminStats()
+interface AdminStats {
+  totalProducts: number
+  totalOrders: number
+  totalBookings: number
+  totalRevenue: number
+  pendingOrders: number
+  pendingBookings: number
+  lowStockProducts: number
+  recentOrders: any[]
+  recentBookings: any[]
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+  }).format(amount)
+}
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<AdminStats>({
+    totalProducts: 0,
+    totalOrders: 0,
+    totalBookings: 0,
+    totalRevenue: 0,
+    pendingOrders: 0,
+    pendingBookings: 0,
+    lowStockProducts: 0,
+    recentOrders: [],
+    recentBookings: [],
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("/api/admin/stats")
+        const data = await response.json()
+        setStats(data)
+      } catch (error) {
+        console.error("Error fetching admin stats:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Package className="h-12 w-12 text-luxury-gold mx-auto mb-4 animate-pulse" />
+            <p className="text-luxury-charcoal">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const statCards = [
     {

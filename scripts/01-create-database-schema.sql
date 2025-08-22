@@ -6,9 +6,13 @@ CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT UNIQUE NOT NULL,
   role TEXT CHECK (role IN ('admin', 'user')) DEFAULT 'user',
-  first_name TEXT,
-  last_name TEXT,
+  full_name TEXT,
   phone TEXT,
+  address TEXT,
+  city TEXT,
+  country TEXT,
+  postal_code TEXT,
+  is_admin BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -20,8 +24,7 @@ CREATE TABLE IF NOT EXISTS categories (
   slug TEXT UNIQUE NOT NULL,
   description TEXT,
   image_url TEXT,
-  type TEXT CHECK (type IN ('real_estate', 'wine', 'car', 'hair', 'fragrance', 'fashion', 'beauty', 'jewelry')) NOT NULL,
-  featured BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
   sort_order INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -37,15 +40,16 @@ CREATE TABLE IF NOT EXISTS products (
   short_description TEXT,
   price NUMERIC(10,2) NOT NULL,
   compare_at_price NUMERIC(10,2),
-  currency TEXT DEFAULT 'NGN',
   sku TEXT UNIQUE,
-  inventory_quantity INTEGER DEFAULT 0,
+  stock_quantity INTEGER DEFAULT 0,
   low_stock_threshold INTEGER DEFAULT 5,
   weight NUMERIC(8,2),
   dimensions TEXT,
-  tags TEXT[] DEFAULT '{}',
   specifications JSONB DEFAULT '{}',
-  featured BOOLEAN DEFAULT FALSE,
+  features TEXT[] DEFAULT '{}',
+  images TEXT[] DEFAULT '{}',
+  is_featured BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
   status TEXT CHECK (status IN ('active', 'draft', 'archived')) DEFAULT 'active',
   meta_title TEXT,
   meta_description TEXT,
@@ -156,9 +160,8 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_status ON products(status);
-CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);
+CREATE INDEX IF NOT EXISTS idx_products_is_featured ON products(is_featured);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
-CREATE INDEX IF NOT EXISTS idx_categories_type ON categories(type);
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
 CREATE INDEX IF NOT EXISTS idx_real_estate_featured ON listings_real_estate(featured);
 CREATE INDEX IF NOT EXISTS idx_real_estate_available ON listings_real_estate(available);

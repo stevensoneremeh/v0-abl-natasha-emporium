@@ -20,14 +20,14 @@ export interface Product {
   price: number
   compare_at_price: number | null
   sku: string | null
-  inventory_quantity: number
+  stock_quantity: number
   low_stock_threshold: number
   weight: number | null
   dimensions: string | null
-  product_images: Array<{ id: string; image_url: string; alt_text?: string; sort_order: number }>
-  tags: string[]
+  images: string[]
+  features: string[]
   specifications: Record<string, any>
-  featured: boolean
+  is_featured: boolean
   status: string
   meta_title: string | null
   meta_description: string | null
@@ -96,12 +96,6 @@ export async function getProductsByCategory(
         id,
         name,
         slug
-      ),
-      product_images (
-        id,
-        image_url,
-        alt_text,
-        sort_order
       )
     `)
     .eq("category_id", categoryId)
@@ -148,12 +142,6 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         id,
         name,
         slug
-      ),
-      product_images (
-        id,
-        image_url,
-        alt_text,
-        sort_order
       )
     `)
     .eq("slug", slug)
@@ -179,12 +167,6 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
         id,
         name,
         slug
-      ),
-      product_images (
-        id,
-        image_url,
-        alt_text,
-        sort_order
       )
     `)
     .eq("featured", true)
@@ -218,12 +200,6 @@ export async function searchProducts(
         id,
         name,
         slug
-      ),
-      product_images (
-        id,
-        image_url,
-        alt_text,
-        sort_order
       )
     `)
     .eq("status", "active")

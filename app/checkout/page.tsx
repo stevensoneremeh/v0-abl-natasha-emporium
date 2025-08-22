@@ -14,10 +14,17 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, CreditCard, Truck, Shield, Package } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
-import { createOrder, formatCurrency } from "@/lib/cart"
 import { initializePayment, generatePaymentReference } from "@/lib/paystack"
 import Link from "next/link"
 import Image from "next/image"
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+  }).format(amount)
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -67,14 +74,21 @@ export default function CheckoutPage() {
 
       const finalBillingInfo = sameAsBilling ? shippingInfo : billingInfo
 
-      // First create the order with pending payment status
-      const result = await createOrder({
-        items,
-        shippingInfo,
-        billingInfo: finalBillingInfo,
-        paymentMethod: "paystack",
-        notes: notes || undefined,
+      const response = await fetch("/api/orders/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items,
+          shippingInfo,
+          billingInfo: finalBillingInfo,
+          paymentMethod: "paystack",
+          notes: notes || undefined,
+        }),
       })
+
+      const result = await response.json()
 
       if (!result.success || !result.orderNumber) {
         throw new Error(result.error || "Failed to create order")

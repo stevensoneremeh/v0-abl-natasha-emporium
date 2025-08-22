@@ -43,14 +43,25 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl)
     }
 
-    // Check if user has admin role (you'll need to implement this based on your user profile structure)
+    const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [
+      "talktostevenson@gmail.com",
+    ]
+
+    if (!adminEmails.includes(user.email || "")) {
+      // Redirect to unauthorized page
+      const redirectUrl = request.nextUrl.clone()
+      redirectUrl.pathname = "/unauthorized"
+      return NextResponse.redirect(redirectUrl)
+    }
+
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
 
     if (!profile || profile.role !== "admin") {
-      // Redirect to unauthorized page or home
-      const redirectUrl = request.nextUrl.clone()
-      redirectUrl.pathname = "/"
-      return NextResponse.redirect(redirectUrl)
+      await supabase.from("profiles").upsert({
+        id: user.id,
+        role: "admin",
+        updated_at: new Date().toISOString(),
+      })
     }
   }
 
