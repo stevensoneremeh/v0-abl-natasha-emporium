@@ -40,14 +40,25 @@ const navigation = [
 export function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState(5)
+  const [isLargeScreen, setIsLargeScreen] = useState(false)
   const pathname = usePathname()
   const { user, signOut } = useAuth()
 
   useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024)
+    }
+
+    checkScreenSize()
+
+    window.addEventListener("resize", checkScreenSize)
+    return () => window.removeEventListener("resize", checkScreenSize)
+  }, [])
+
+  useEffect(() => {
     const interval = setInterval(() => {
-      // Simulate real-time updates
       setNotifications((prev) => Math.max(0, prev + Math.floor(Math.random() * 3) - 1))
-    }, 30000) // Update every 30 seconds
+    }, 30000)
 
     return () => clearInterval(interval)
   }, [])
@@ -76,7 +87,7 @@ export function AdminSidebar() {
       <AnimatePresence>
         <motion.div
           initial={{ x: -300 }}
-          animate={{ x: isOpen || window.innerWidth >= 1024 ? 0 : -300 }}
+          animate={{ x: isOpen || isLargeScreen ? 0 : -300 }}
           exit={{ x: -300 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className={`fixed inset-y-0 left-0 z-40 w-64 bg-luxury-navy transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}
