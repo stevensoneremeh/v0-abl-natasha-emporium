@@ -2,7 +2,7 @@ import type React from "react"
 import { AdminSidebar } from "@/components/admin-sidebar"
 
 export const metadata = {
-  title: "Admin Dashboard - ABL NATASHA EMPORIUM",
+  title: "Admin Dashboard - ABL NATASHA ENTERPRISES",
   description: "Administrative dashboard for managing the luxury e-commerce platform",
 }
 

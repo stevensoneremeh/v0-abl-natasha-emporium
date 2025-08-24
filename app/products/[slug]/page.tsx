@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
   }
 
   return {
-    title: `${product.name} - ABL NATASHA EMPORIUM`,
+    title: `${product.name} - ABL NATASHA ENTERPRISES`,
     description: product.meta_description || product.short_description || product.description,
   }
 }

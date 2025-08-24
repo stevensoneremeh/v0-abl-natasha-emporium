@@ -17,7 +17,7 @@ export function StructuredData({ type, data }: StructuredDataProps) {
           ...baseData,
           brand: {
             "@type": "Brand",
-            name: data.brand || "ABL NATASHA EMPORIUM",
+            name: data.brand || "ABL NATASHA ENTERPRISES",
           },
           offers: {
             "@type": "Offer",
@@ -26,7 +26,7 @@ export function StructuredData({ type, data }: StructuredDataProps) {
             availability: data.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             seller: {
               "@type": "Organization",
-              name: "ABL NATASHA EMPORIUM",
+              name: "ABL NATASHA ENTERPRISES",
             },
           },
           aggregateRating: data.rating

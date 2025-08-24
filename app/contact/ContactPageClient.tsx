@@ -152,7 +152,7 @@ export default function ContactPageClient() {
               className="space-y-8"
             >
               <div>
-                <h3 className="text-2xl font-bold mb-4">Why Choose ABL NATASHA EMPORIUM?</h3>
+                <h3 className="text-2xl font-bold mb-4">Why Choose ABL NATASHA ENTERPRISES?</h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>

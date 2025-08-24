@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: RealEstatePropertyPageProps) 
   }
 
   return {
-    title: `${property.products.name} - Real Estate - ABL NATASHA EMPORIUM`,
+    title: `${property.products.name} - Real Estate - ABL NATASHA ENTERPRISES`,
     description: property.products.short_description || property.products.description,
   }
 }

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
   }
 
   return {
-    title: `${category.name} - ABL NATASHA EMPORIUM`,
+    title: `${category.name} - ABL NATASHA ENTERPRISES`,
     description: category.description || `Browse our collection of ${category.name.toLowerCase()} products`,
   }
 }

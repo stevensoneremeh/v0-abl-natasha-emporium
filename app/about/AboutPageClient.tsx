@@ -48,12 +48,12 @@ export default function AboutPageClient() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">About ABL NATASHA EMPORIUM</Badge>
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">About ABL NATASHA ENTERPRISES</Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
               Redefining Luxury Living
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              For over a decade, ABL NATASHA EMPORIUM has been the premier destination for discerning individuals
+              For over a decade, ABL NATASHA ENTERPRISES has been the premier destination for discerning individuals
               seeking the finest in luxury fashion, beauty, real estate, and exclusive services. We don't just sell
               products – we curate experiences that elevate your lifestyle.
             </p>
@@ -95,7 +95,7 @@ export default function AboutPageClient() {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Values</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              The principles that guide everything we do at ABL NATASHA EMPORIUM
+              The principles that guide everything we do at ABL NATASHA ENTERPRISES
             </p>
           </motion.div>
 
@@ -129,8 +129,8 @@ export default function AboutPageClient() {
               <div className="space-y-4 text-muted-foreground">
                 <p>
                   Founded with a vision to make luxury accessible to those who appreciate the finer things in life, ABL
-                  NATASHA EMPORIUM began as a small boutique with big dreams. Our founder, Natasha, recognized a gap in
-                  the market for authentic, high-quality luxury goods backed by exceptional service.
+                  NATASHA ENTERPRISES began as a small boutique with big dreams. Our founder, Natasha, recognized a gap
+                  in the market for authentic, high-quality luxury goods backed by exceptional service.
                 </p>
                 <p>
                   Today, we've grown into a global platform that connects discerning customers with the world's most

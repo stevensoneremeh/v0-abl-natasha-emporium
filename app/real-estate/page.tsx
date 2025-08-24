@@ -14,7 +14,7 @@ interface RealEstatePageProps {
 }
 
 export const metadata = {
-  title: "Real Estate - ABL NATASHA EMPORIUM",
+  title: "Real Estate - ABL NATASHA ENTERPRISES",
   description:
     "Discover luxury properties and real estate investments. Book your perfect stay or find your dream property.",
 }

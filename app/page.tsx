@@ -224,7 +224,7 @@ export default function HomePage() {
       <EnhancedNavigation />
 
       <VideoHero
-        videoSrc="/luxury-lifestyle-video-background.png"
+        videoSrc="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4"
         posterImage="/luxury-lifestyle-hero.png"
         overlayImages={[
           {
