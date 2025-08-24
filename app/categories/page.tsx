@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import CategoriesClientPage from "./CategoriesClientPage"
 
 export const metadata: Metadata = {
-  title: "Categories - ABL NATASHA EMPORIUM",
+  title: "Categories - ABL NATASHA ENTERPRISES",
   description: "Browse our luxury categories including fashion, beauty, real estate, and more.",
 }
 

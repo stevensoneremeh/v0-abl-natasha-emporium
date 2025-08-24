@@ -8,6 +8,7 @@ import { Menu, Home, Wine, Car, Scissors, Sparkles, Search, User, ShoppingCart, 
 import Link from "next/link"
 import { useState } from "react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 const categories = [
   {
@@ -64,11 +65,15 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
       <SheetContent side="left" className="w-full sm:max-w-sm bg-luxury-navy text-luxury-cream p-0">
         <SheetHeader className="p-6 pb-4">
           <div className="flex items-center justify-between">
-            <SheetTitle className="flex items-center space-x-2 text-luxury-gold">
-              <div className="w-8 h-8 bg-luxury-gold rounded-full flex items-center justify-center">
-                <span className="text-luxury-navy font-bold text-sm">AN</span>
-              </div>
-              <span className="font-playfair font-bold text-lg">ABL NATASHA</span>
+            <SheetTitle className="flex items-center space-x-3 text-luxury-gold">
+              <Image
+                src="/images/abl-logo.png"
+                alt="ABL NATASHA ENTERPRISES"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
+              <span className="font-playfair font-bold text-lg">ABL NATASHA ENTERPRISES</span>
             </SheetTitle>
           </div>
         </SheetHeader>
@@ -178,7 +183,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
 
           {/* Footer */}
           <div className="p-6 pt-4 border-t border-luxury-charcoal">
-            <p className="text-luxury-cream/60 text-sm text-center">© 2024 ABL Natasha Emporium</p>
+            <p className="text-luxury-cream/60 text-sm text-center">© 2024 ABL Natasha Enterprises</p>
           </div>
         </div>
       </SheetContent>

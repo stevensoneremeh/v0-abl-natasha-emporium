@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import Image from "next/image"
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -87,11 +87,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="hidden lg:flex lg:w-80 lg:flex-col lg:fixed lg:inset-y-0">
           <Card className="flex flex-col flex-1 m-4 overflow-hidden">
             <div className="p-6 border-b">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-luxury-gold rounded-full flex items-center justify-center">
-                  <span className="text-luxury-navy font-bold text-sm">AN</span>
-                </div>
-                <span className="text-luxury-gold font-playfair font-bold text-lg">ABL NATASHA</span>
+              <Link href="/" className="flex items-center space-x-3">
+                <Image
+                  src="/images/abl-logo.png"
+                  alt="ABL NATASHA ENTERPRISES"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+                <span className="text-luxury-gold font-playfair font-bold text-lg">ABL NATASHA ENTERPRISES</span>
               </Link>
               <div className="mt-4 p-4 bg-luxury-cream rounded-lg">
                 <p className="text-sm font-medium text-luxury-navy">Welcome back,</p>
@@ -136,10 +140,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Menu className="h-5 w-5" />
               </Button>
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-luxury-gold rounded-full flex items-center justify-center">
-                  <span className="text-luxury-navy font-bold text-xs">AN</span>
-                </div>
-                <span className="text-luxury-gold font-playfair font-bold">ABL NATASHA</span>
+                <Image
+                  src="/images/abl-logo.png"
+                  alt="ABL NATASHA ENTERPRISES"
+                  width={24}
+                  height={24}
+                  className="object-contain"
+                />
+                <span className="text-luxury-gold font-playfair font-bold">ABL NATASHA ENTERPRISES</span>
               </Link>
               <div className="w-10" />
             </div>

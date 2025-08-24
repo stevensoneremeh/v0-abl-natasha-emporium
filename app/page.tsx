@@ -110,7 +110,7 @@ const testimonials = [
     name: "Adebayo Johnson",
     role: "Real Estate Investor",
     content:
-      "ABL Natasha Emporium helped me find the perfect luxury penthouse. Their attention to detail and premium service is unmatched.",
+      "ABL Natasha Enterprises helped me find the perfect luxury penthouse. Their attention to detail and premium service is unmatched.",
     rating: 5,
     image: "/professional-man-headshot.png",
   },
@@ -168,7 +168,7 @@ export default function HomePage() {
       <StructuredData
         type="WebSite"
         data={{
-          name: "ABL NATASHA EMPORIUM",
+          name: "ABL NATASHA ENTERPRISES",
           url: typeof window !== "undefined" ? window.location.origin : "https://abl-natasha-emporium.vercel.app",
           description: "Luxury lifestyle collection featuring real estate, wines, cars, hair products, and fragrances.",
           potentialAction: {
@@ -337,7 +337,7 @@ export default function HomePage() {
                 name: product.name,
                 description: `${product.category} - ${product.name}`,
                 image: product.image,
-                brand: "ABL NATASHA EMPORIUM",
+                brand: "ABL NATASHA ENTERPRISES",
                 price: product.price.replace(/[₦,]/g, ""),
                 priceCurrency: "NGN",
                 inStock: true,
@@ -587,11 +587,15 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">A</span>
-                </div>
-                <span className="text-primary font-serif font-bold text-xl">ABL NATASHA EMPORIUM</span>
+              <div className="flex items-center space-x-3 mb-4">
+                <Image
+                  src="/images/abl-logo.png"
+                  alt="ABL NATASHA ENTERPRISES"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+                <span className="text-primary font-serif font-bold text-xl">ABL NATASHA ENTERPRISES</span>
               </div>
               <p className="text-background/80 mb-4 max-w-md">
                 Your premier destination for luxury real estate, premium wines, exotic cars, luxury hair products, and
@@ -643,7 +647,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-muted-foreground mt-8 pt-8 text-center">
-            <p className="text-background/60">© 2024 ABL Natasha Emporium. All rights reserved.</p>
+            <p className="text-background/60">© 2024 ABL Natasha Enterprises. All rights reserved.</p>
           </div>
         </div>
       </motion.footer>

@@ -9,6 +9,7 @@ import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
+import Image from "next/image"
 
 const navigationItems = [
   { name: "Home", href: "/" },
@@ -47,16 +48,18 @@ export function EnhancedNavigation() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link href="/" className="flex items-center space-x-2">
-              <motion.div
-                className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-              >
-                <span className="text-primary-foreground font-bold text-sm">A</span>
+            <Link href="/" className="flex items-center space-x-3">
+              <motion.div whileHover={{ rotate: 5 }} transition={{ duration: 0.3 }}>
+                <Image
+                  src="/images/abl-logo.png"
+                  alt="ABL NATASHA ENTERPRISES"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </motion.div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                ABL NATASHA
+                ABL NATASHA ENTERPRISES
               </span>
             </Link>
           </motion.div>

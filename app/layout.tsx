@@ -25,15 +25,15 @@ const inter = Inter({
 const baseUrl = safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL).toString()
 
 export const metadata: Metadata = {
-  title: "ABL NATASHA EMPORIUM - Luxury Lifestyle Collection",
+  title: "ABL NATASHA ENTERPRISES - Luxury Lifestyle Collection",
   description:
-    "Discover luxury real estate, premium wines, exotic cars, premium hair products, and exclusive fragrances at ABL Natasha Emporium. Your premier destination for luxury lifestyle products.",
+    "Discover luxury real estate, premium wines, exotic cars, premium hair products, and exclusive fragrances at ABL Natasha Enterprises. Your premier destination for luxury lifestyle products.",
   generator: "v0.app",
   keywords:
     "luxury, real estate, wines, cars, hair, wigs, perfumes, premium, exclusive, fashion, beauty, jewelry, lifestyle",
-  authors: [{ name: "ABL NATASHA EMPORIUM" }],
-  creator: "ABL NATASHA EMPORIUM",
-  publisher: "ABL NATASHA EMPORIUM",
+  authors: [{ name: "ABL NATASHA ENTERPRISES" }],
+  creator: "ABL NATASHA ENTERPRISES",
+  publisher: "ABL NATASHA ENTERPRISES",
   formatDetection: {
     email: false,
     address: false,
@@ -44,17 +44,17 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "ABL NATASHA EMPORIUM - Luxury Lifestyle Collection",
+    title: "ABL NATASHA ENTERPRISES - Luxury Lifestyle Collection",
     description:
-      "Discover luxury real estate, premium wines, exotic cars, premium hair products, and exclusive fragrances at ABL Natasha Emporium.",
+      "Discover luxury real estate, premium wines, exotic cars, premium hair products, and exclusive fragrances at ABL Natasha Enterprises.",
     url: "/",
-    siteName: "ABL NATASHA EMPORIUM",
+    siteName: "ABL NATASHA ENTERPRISES",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "ABL NATASHA EMPORIUM - Luxury Lifestyle Collection",
+        alt: "ABL NATASHA ENTERPRISES - Luxury Lifestyle Collection",
       },
     ],
     locale: "en_US",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ABL NATASHA EMPORIUM - Luxury Lifestyle Collection",
+    title: "ABL NATASHA ENTERPRISES - Luxury Lifestyle Collection",
     description:
       "Discover luxury real estate, premium wines, exotic cars, premium hair products, and exclusive fragrances.",
     images: ["/og-image.jpg"],
@@ -98,7 +98,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "ABL NATASHA EMPORIUM",
+              name: "ABL NATASHA ENTERPRISES",
               url: baseUrl,
               logo: `${baseUrl}/og-image.jpg`,
               description:
