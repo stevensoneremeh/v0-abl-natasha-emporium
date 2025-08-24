@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Calendar, Users, Phone, Mail, User, MessageSquare, CreditCard } from "lucide-react"
-import type { RealEstateProperty } from "@/lib/real-estate"
-import { calculateNights, formatCurrency, createBooking } from "@/lib/real-estate"
+import type { RealEstateProperty } from "@/lib/types/real-estate"
+import { calculateNights, formatCurrency, createBooking } from "@/lib/utils/real-estate"
 
 interface BookingFormProps {
   property: RealEstateProperty

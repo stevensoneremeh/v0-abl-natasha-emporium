@@ -1,4 +1,4 @@
-import { getRealEstatePropertyBySlug } from "@/lib/real-estate"
+import { getRealEstatePropertyBySlug } from "@/lib/real-estate-client"
 import { BookingForm } from "@/components/booking-form"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"

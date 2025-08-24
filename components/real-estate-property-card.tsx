@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Star, MapPin, Bed, Bath, Square, Calendar } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import type { RealEstateProperty } from "@/lib/real-estate"
-import { formatCurrency } from "@/lib/real-estate"
+import type { RealEstateProperty } from "@/lib/types/real-estate"
+import { formatCurrency } from "@/lib/utils/currency"
 
 interface RealEstatePropertyCardProps {
   property: RealEstateProperty

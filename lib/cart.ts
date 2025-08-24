@@ -1,4 +1,4 @@
-import type { Product } from "@/lib/database"
+import type { Product } from "@/lib/types/database"
 
 export interface CartItem {
   id: string

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
-import type { Product } from "@/lib/database"
+import type { Product } from "@/lib/types/database"
 import type { Order } from "@/lib/cart"
-import type { RealEstateBooking } from "@/lib/real-estate"
+import type { RealEstateBooking } from "@/lib/types/real-estate"
 
 export interface AdminStats {
   totalProducts: number

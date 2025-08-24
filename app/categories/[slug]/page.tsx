@@ -1,4 +1,4 @@
-import { getCategoryBySlug, getProductsByCategory } from "@/lib/database"
+import { getCategoryBySlug, getProductsByCategory } from "@/lib/database-client"
 import { ProductCard } from "@/components/product-card"
 import { ProductFilters, type FilterState } from "@/components/product-filters"
 import { Button } from "@/components/ui/button"

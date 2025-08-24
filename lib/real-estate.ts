@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import type { Product } from "@/lib/database"
+import type { Product } from "@/lib/types/database"
 
 export interface RealEstateProperty {
   id: string

@@ -1,4 +1,4 @@
-import { getProductBySlug } from "@/lib/database"
+import { getProductBySlug } from "@/lib/database-client"
 import ProductClientPage from "./ProductClientPage"
 
 interface ProductPageProps {

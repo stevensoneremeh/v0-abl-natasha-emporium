@@ -3,7 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { CartManager, type CartItem } from "@/lib/cart"
-import type { Product } from "@/lib/database"
+import type { Product } from "@/lib/types/database"
 import { useAuth } from "@/lib/auth-context"
 
 interface CartContextType {

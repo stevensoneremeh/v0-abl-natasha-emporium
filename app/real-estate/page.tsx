@@ -1,4 +1,4 @@
-import { getRealEstateProperties } from "@/lib/real-estate"
+import { getRealEstateProperties } from "@/lib/real-estate-client"
 import { RealEstatePropertyCard } from "@/components/real-estate-property-card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"

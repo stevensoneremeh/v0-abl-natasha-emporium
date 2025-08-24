@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Eye, Search, Filter, Download } from "lucide-react"
-import { getAllOrders, formatCurrency } from "@/lib/admin"
+import { getAllOrders } from "@/lib/admin"
+import { formatCurrency } from "@/lib/utils/currency"
 import Link from "next/link"
 
 interface OrdersPageProps {
