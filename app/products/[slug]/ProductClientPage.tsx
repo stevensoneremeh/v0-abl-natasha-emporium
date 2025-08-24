@@ -1,6 +1,6 @@
 "use client"
 
-import { getProductBySlug, getProductsByCategory } from "@/lib/database"
+import { getProductBySlug, getProductsByCategory } from "@/lib/database-client"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -46,7 +46,7 @@ async function ProductContent({ params }: ProductPageProps) {
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
 
-  // <CHANGE> Prepare badges for interactive gallery
+  // Prepare badges for interactive gallery
   const badges = []
   if (product.is_featured) {
     badges.push({ text: "Featured", variant: "featured" as const })
@@ -60,7 +60,7 @@ async function ProductContent({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-luxury-cream pb-16 md:pb-0">
-      {/* <CHANGE> Replace simple breadcrumb with Breadcrumbs component */}
+      {/* Replace simple breadcrumb with Breadcrumbs component */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Breadcrumbs />
@@ -83,12 +83,12 @@ async function ProductContent({ params }: ProductPageProps) {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* <CHANGE> Replace static images with InteractiveProductGallery */}
+          {/* Replace static images with InteractiveProductGallery */}
           <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
             <InteractiveProductGallery images={product.images} productName={product.name} badges={badges} />
           </motion.div>
 
-          {/* <CHANGE> Add animations to product info section */}
+          {/* Add animations to product info section */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -175,7 +175,7 @@ async function ProductContent({ params }: ProductPageProps) {
               </motion.div>
             )}
 
-            {/* <CHANGE> Add quantity selector and enhanced actions */}
+            {/* Add quantity selector and enhanced actions */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -304,7 +304,7 @@ async function ProductContent({ params }: ProductPageProps) {
           </motion.div>
         )}
 
-        {/* <CHANGE> Add ProductReviews component */}
+        {/* Add ProductReviews component */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
