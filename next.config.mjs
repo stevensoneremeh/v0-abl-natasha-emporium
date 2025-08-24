@@ -31,6 +31,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "supabase.com",
       },
+      {
+        protocol: "https",
+        hostname: "*.vercel-storage.com",
+      },
+      {
+        protocol: "https",
+        hostname: "blob.vercel-storage.com",
+      },
     ],
   },
   async headers() {
@@ -82,7 +90,6 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
-    optimizeCss: true,
     scrollRestoration: true,
     turbo: {
       rules: {
@@ -96,7 +103,6 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
-  output: "standalone",
 }
 
 export default nextConfig

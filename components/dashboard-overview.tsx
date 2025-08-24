@@ -3,10 +3,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ShoppingBag, Heart, Package, TrendingUp, ArrowRight, Calendar } from "lucide-react"
+import { ShoppingBag, Heart, Package, TrendingUp, ArrowRight, Calendar, UserIcon } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { User } from "@supabase/supabase-js"
+
+interface User {
+  id: string
+  email?: string
+  user_metadata?: {
+    full_name?: string
+    [key: string]: any
+  }
+  [key: string]: any
+}
 
 interface DashboardOverviewProps {
   user: User
@@ -142,7 +151,7 @@ export function DashboardOverview({ user, profile, recentOrders, wishlistCount }
             <CardContent className="space-y-4">
               <Button className="w-full justify-start gap-3 bg-transparent" variant="outline" asChild>
                 <Link href="/dashboard/profile">
-                  <User className="h-5 w-5" />
+                  <UserIcon className="h-5 w-5" />
                   Update Profile
                 </Link>
               </Button>
