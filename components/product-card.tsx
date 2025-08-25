@@ -12,6 +12,7 @@ import type { Product } from "@/lib/types/database"
 import { useCart } from "@/contexts/cart-context"
 import { useWishlist } from "@/contexts/wishlist-context"
 import { QuickViewModal } from "@/components/quick-view-modal"
+import { BuyNowButton } from "@/components/buy-now-button"
 import { motion } from "framer-motion"
 import { useState } from "react"
 
@@ -203,7 +204,7 @@ export function ProductCard({ product, showCategory = true }: ProductCardProps) 
             )}
 
             <motion.div
-              className="flex items-center justify-between"
+              className="flex items-center justify-between mb-4"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -231,20 +232,33 @@ export function ProductCard({ product, showCategory = true }: ProductCardProps) 
               </motion.div>
             </motion.div>
 
+            <motion.div
+              className="mb-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <BuyNowButton
+                product={product}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                size="sm"
+              />
+            </motion.div>
+
             {/* Features */}
             {product.features && product.features.length > 0 && (
               <motion.div
                 className="mt-4 flex flex-wrap gap-1"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.7 }}
               >
                 {product.features.slice(0, 3).map((feature, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6 + index * 0.1 }}
+                    transition={{ delay: 0.7 + index * 0.1 }}
                   >
                     <Badge variant="secondary" className="text-xs">
                       {feature}
@@ -255,7 +269,7 @@ export function ProductCard({ product, showCategory = true }: ProductCardProps) 
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.9 }}
+                    transition={{ delay: 1.0 }}
                   >
                     <Badge variant="secondary" className="text-xs">
                       +{product.features.length - 3} more

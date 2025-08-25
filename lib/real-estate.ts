@@ -101,7 +101,7 @@ export async function getRealEstatePropertyBySlug(slug: string): Promise<RealEst
     .from("real_estate_properties")
     .select(`
       *,
-      products (
+      products!inner (
         id,
         name,
         slug,
@@ -121,14 +121,18 @@ export async function getRealEstatePropertyBySlug(slug: string): Promise<RealEst
     `)
     .eq("products.slug", slug)
     .eq("products.is_active", true)
-    .single()
+    .limit(1)
 
   if (error) {
     console.error("Error fetching real estate property:", error)
+    throw new Error(`Database query failed: ${error.message}`)
+  }
+
+  if (!data || data.length === 0) {
     return null
   }
 
-  return data
+  return data[0]
 }
 
 export async function checkAvailability(

@@ -15,24 +15,40 @@ export async function getRealEstateProperties(
     if (options.availableOnly) params.set("availableOnly", "true")
 
     const response = await fetch(`/api/real-estate/properties?${params}`)
-    if (!response.ok) throw new Error("Failed to fetch properties")
+    if (!response.ok) {
+      console.error("[v0] Failed to fetch properties:", response.status, response.statusText)
+      throw new Error("Failed to fetch properties")
+    }
 
     return await response.json()
   } catch (error) {
-    console.error("Error fetching real estate properties:", error)
+    console.error("[v0] Error fetching real estate properties:", error)
     return []
   }
 }
 
 export async function getRealEstatePropertyBySlug(slug: string): Promise<RealEstateProperty | null> {
   try {
+    console.log("[v0] Fetching property by slug:", slug)
     const response = await fetch(`/api/real-estate/properties/${slug}`)
-    if (!response.ok) return null
 
-    return await response.json()
+    if (response.status === 404) {
+      console.log("[v0] Property not found:", slug)
+      return null
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: "Unknown error" }))
+      console.error("[v0] API error:", response.status, errorData)
+      throw new Error(errorData.error || "Failed to fetch property")
+    }
+
+    const data = await response.json()
+    console.log("[v0] Successfully fetched property:", data.id)
+    return data
   } catch (error) {
-    console.error("Error fetching real estate property:", error)
-    return null
+    console.error("[v0] Error fetching real estate property:", error)
+    throw error
   }
 }
 

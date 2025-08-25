@@ -288,37 +288,39 @@ export default function HomePage() {
                     variants={fadeInUp}
                     whileHover={{ y: -8, transition: { duration: 0.3 } }}
                   >
-                    <Card className="bg-card border-border hover:border-primary/50 transition-all duration-300 group cursor-pointer overflow-hidden shadow-lg hover:shadow-xl">
-                      <div className="relative h-48 overflow-hidden">
-                        <Image
-                          src={category.image || "/placeholder.svg"}
-                          alt={category.name}
-                          fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-foreground/20 group-hover:bg-foreground/10 transition-colors duration-300"></div>
-                        <motion.div
-                          className="absolute top-4 left-4"
-                          whileHover={{ rotate: 360, transition: { duration: 0.5 } }}
-                        >
-                          <div className="bg-primary/90 p-2 rounded-full">
-                            <IconComponent className="h-5 w-5 text-primary-foreground" />
-                          </div>
-                        </motion.div>
-                      </div>
-                      <CardContent className="p-6">
-                        <h3 className="font-serif text-xl font-bold text-foreground mb-2">{category.name}</h3>
-                        <p className="text-muted-foreground mb-4">{category.description}</p>
-                        <Button
-                          variant="ghost"
-                          className="text-primary hover:text-primary-foreground hover:bg-primary p-0 h-auto font-semibold group-hover:translate-x-2 transition-transform duration-300"
-                        >
-                          Explore {category.name}
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    <Link href={`/categories/${category.slug}`}>
+                      <Card className="bg-card border-border hover:border-primary/50 transition-all duration-300 group cursor-pointer overflow-hidden shadow-lg hover:shadow-xl">
+                        <div className="relative h-48 overflow-hidden">
+                          <Image
+                            src={category.image || "/placeholder.svg"}
+                            alt={category.name}
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-foreground/20 group-hover:bg-foreground/10 transition-colors duration-300"></div>
+                          <motion.div
+                            className="absolute top-4 left-4"
+                            whileHover={{ rotate: 360, transition: { duration: 0.5 } }}
+                          >
+                            <div className="bg-primary/90 p-2 rounded-full">
+                              <IconComponent className="h-5 w-5 text-primary-foreground" />
+                            </div>
+                          </motion.div>
+                        </div>
+                        <CardContent className="p-6">
+                          <h3 className="font-serif text-xl font-bold text-foreground mb-2">{category.name}</h3>
+                          <p className="text-muted-foreground mb-4">{category.description}</p>
+                          <Button
+                            variant="ghost"
+                            className="text-primary hover:text-primary-foreground hover:bg-primary p-0 h-auto font-semibold group-hover:translate-x-2 transition-transform duration-300"
+                          >
+                            Explore {category.name}
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </motion.div>
                 )
               })}
@@ -372,49 +374,51 @@ export default function HomePage() {
             >
               {featuredProducts.map((product, index) => (
                 <motion.div key={product.id} variants={fadeInUp} whileHover={{ y: -12, transition: { duration: 0.3 } }}>
-                  <Card className="bg-background border-border hover:border-primary/50 transition-all duration-300 group cursor-pointer overflow-hidden shadow-lg hover:shadow-xl">
-                    <div className="relative h-64 overflow-hidden">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: index * 0.1 + 0.5 }}
-                      >
-                        <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground font-semibold">
-                          {product.badge}
-                        </Badge>
-                      </motion.div>
-                    </div>
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-1 mb-2">
-                        {[...Array(product.rating)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: index * 0.1 + 0.7 + i * 0.1 }}
-                          >
-                            <Star className="h-4 w-4 fill-accent text-accent" />
-                          </motion.div>
-                        ))}
-                        <span className="text-sm text-muted-foreground ml-2">({product.reviews})</span>
+                  <Link href={`/products/${product.id}`}>
+                    <Card className="bg-background border-border hover:border-primary/50 transition-all duration-300 group cursor-pointer overflow-hidden shadow-lg hover:shadow-xl">
+                      <div className="relative h-64 overflow-hidden">
+                        <Image
+                          src={product.image || "/placeholder.svg"}
+                          alt={product.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: index * 0.1 + 0.5 }}
+                        >
+                          <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground font-semibold">
+                            {product.badge}
+                          </Badge>
+                        </motion.div>
                       </div>
-                      <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{product.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-3">{product.category}</p>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-lg text-foreground">{product.price}</span>
-                        {product.originalPrice && (
-                          <span className="text-sm text-muted-foreground line-through">{product.originalPrice}</span>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-1 mb-2">
+                          {[...Array(product.rating)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: index * 0.1 + 0.7 + i * 0.1 }}
+                            >
+                              <Star className="h-4 w-4 fill-accent text-accent" />
+                            </motion.div>
+                          ))}
+                          <span className="text-sm text-muted-foreground ml-2">({product.reviews})</span>
+                        </div>
+                        <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{product.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-3">{product.category}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-lg text-foreground">{product.price}</span>
+                          {product.originalPrice && (
+                            <span className="text-sm text-muted-foreground line-through">{product.originalPrice}</span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </motion.div>
               ))}
             </motion.div>
@@ -427,10 +431,12 @@ export default function HomePage() {
               transition={{ duration: 0.6 }}
             >
               <motion.div {...scaleOnHover}>
-                <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground text-lg px-8 py-4">
-                  View All Products
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <Link href="/products">
+                  <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground text-lg px-8 py-4">
+                    View All Products
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
               </motion.div>
             </motion.div>
           </div>
@@ -561,17 +567,21 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <motion.div {...scaleOnHover}>
-              <Button className="bg-background text-foreground hover:bg-background/90 text-lg px-8 py-4 font-semibold">
-                Join Our Community
-              </Button>
+              <Link href="/auth/sign-up">
+                <Button className="bg-background text-foreground hover:bg-background/90 text-lg px-8 py-4 font-semibold">
+                  Join Our Community
+                </Button>
+              </Link>
             </motion.div>
             <motion.div {...scaleOnHover}>
-              <Button
-                variant="outline"
-                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary text-lg px-8 py-4 bg-transparent"
-              >
-                Contact Us
-              </Button>
+              <Link href="/contact">
+                <Button
+                  variant="outline"
+                  className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary text-lg px-8 py-4 bg-transparent"
+                >
+                  Contact Us
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>

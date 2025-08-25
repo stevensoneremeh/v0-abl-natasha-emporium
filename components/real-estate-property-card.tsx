@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,6 +10,7 @@ import Link from "next/link"
 import Image from "next/image"
 import type { RealEstateProperty } from "@/lib/types/real-estate"
 import { formatCurrency } from "@/lib/utils/currency"
+import { useRouter } from "next/navigation"
 
 interface RealEstatePropertyCardProps {
   property: RealEstateProperty
@@ -15,8 +18,14 @@ interface RealEstatePropertyCardProps {
 
 export function RealEstatePropertyCard({ property }: RealEstatePropertyCardProps) {
   const product = property.products
+  const router = useRouter()
 
   if (!product) return null
+
+  const handleBookNow = (e: React.MouseEvent) => {
+    e.preventDefault()
+    router.push(`/real-estate/${product.slug}#booking`)
+  }
 
   return (
     <Card className="card-luxury group cursor-pointer overflow-hidden h-full">
@@ -120,10 +129,7 @@ export function RealEstatePropertyCard({ property }: RealEstatePropertyCardProps
             <Button
               size="sm"
               className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-navy"
-              onClick={(e) => {
-                e.preventDefault()
-                // TODO: Open booking modal or navigate to booking page
-              }}
+              onClick={handleBookNow}
             >
               <Calendar className="h-4 w-4 mr-1" />
               Book Now

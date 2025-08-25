@@ -227,13 +227,12 @@ async function PropertyContent({ params }: RealEstatePropertyPageProps) {
 
           {/* Booking Form */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
+            <div className="sticky top-8" id="booking">
               {property.is_available_for_booking ? (
                 <BookingForm
                   property={property}
                   onBookingComplete={(bookingId) => {
-                    // TODO: Navigate to booking confirmation page
-                    console.log("Booking completed:", bookingId)
+                    window.location.href = `/booking-confirmation?booking=${bookingId}`
                   }}
                 />
               ) : (
@@ -243,7 +242,9 @@ async function PropertyContent({ params }: RealEstatePropertyPageProps) {
                     <p className="text-luxury-charcoal mb-4">
                       This property is currently not available for booking. Contact us for more information.
                     </p>
-                    <Button className="btn-luxury w-full">Contact Us</Button>
+                    <Button className="btn-luxury w-full" asChild>
+                      <Link href="/contact">Contact Us</Link>
+                    </Button>
                   </CardContent>
                 </Card>
               )}
