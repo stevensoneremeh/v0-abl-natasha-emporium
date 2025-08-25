@@ -39,6 +39,8 @@ export function VideoHero({
   const [isPlaying, setIsPlaying] = useState(true)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [showVideo, setShowVideo] = useState(true)
+  const [videoError, setVideoError] = useState(false)
 
   useEffect(() => {
     // Check for reduced motion preference
@@ -71,16 +73,32 @@ export function VideoHero({
     const video = videoRef.current
     if (!video) return
 
-    if (prefersReducedMotion || isMobile) {
+    if (prefersReducedMotion) {
       video.pause()
       setIsPlaying(false)
+      setShowVideo(false)
     } else {
-      video.play().catch(() => {
-        // Autoplay failed, show poster instead
-        setIsPlaying(false)
-      })
+      const playPromise = video.play()
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true)
+            setShowVideo(true)
+          })
+          .catch(() => {
+            // Autoplay failed, but still show video with manual controls
+            setIsPlaying(false)
+            setShowVideo(true)
+          })
+      }
     }
-  }, [prefersReducedMotion, isMobile])
+  }, [prefersReducedMotion])
+
+  const handleVideoError = () => {
+    setVideoError(true)
+    setShowVideo(false)
+    setIsPlaying(false)
+  }
 
   const togglePlayPause = () => {
     const video = videoRef.current
@@ -103,16 +121,18 @@ export function VideoHero({
     <section className="relative h-screen min-h-[600px] overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0">
-        {!prefersReducedMotion && !isMobile ? (
+        {showVideo && !videoError ? (
           <video
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
-            autoPlay
+            autoPlay={!isMobile} // Only autoplay on desktop
             muted
             loop
             playsInline
             poster={posterImage}
-            preload="metadata"
+            preload={isMobile ? "none" : "metadata"} // Optimize loading for mobile
+            onError={handleVideoError}
+            controls={isMobile && !isPlaying} // Show controls on mobile when paused
           >
             <source src={videoSrc} type="video/mp4" />
             {/* Fallback image if video fails to load */}
@@ -221,8 +241,8 @@ export function VideoHero({
         </div>
       </div>
 
-      {/* Video Controls (only show if video is available) */}
-      {!prefersReducedMotion && !isMobile && (
+      {/* Video Controls */}
+      {showVideo && !videoError && (
         <motion.button
           onClick={togglePlayPause}
           className="absolute bottom-6 right-6 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors z-20"

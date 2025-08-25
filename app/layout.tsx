@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Playfair_Display, Inter } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
+import { WishlistProvider } from "@/contexts/wishlist-context"
 import { AuthProvider } from "@/lib/auth-context"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -130,9 +131,11 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange={false}>
             <AuthProvider>
               <CartProvider>
-                {children}
-                <Analytics />
-                <SpeedInsights />
+                <WishlistProvider>
+                  {children}
+                  <Analytics />
+                  <SpeedInsights />
+                </WishlistProvider>
               </CartProvider>
             </AuthProvider>
           </ThemeProvider>
