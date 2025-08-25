@@ -1,0 +1,121 @@
+-- Fix the check constraint violation for listings_real_estate table
+-- First, let's check what constraint exists and fix it
+
+-- Drop the existing constraint if it exists
+ALTER TABLE listings_real_estate DROP CONSTRAINT IF EXISTS listings_real_estate_listing_type_check;
+
+-- Add the correct constraint with proper values
+ALTER TABLE listings_real_estate ADD CONSTRAINT listings_real_estate_listing_type_check 
+CHECK (listing_type IN ('for_sale', 'for_rent', 'lease', 'booking'));
+
+-- Insert corrected real estate listings with proper listing_type values
+INSERT INTO listings_real_estate (
+    id,
+    title,
+    slug,
+    description,
+    listing_type,
+    property_type,
+    price,
+    bedrooms,
+    bathrooms,
+    area,
+    address,
+    location,
+    currency,
+    features,
+    amenities,
+    available,
+    featured,
+    virtual_tour_url,
+    meta_title,
+    meta_description
+) VALUES 
+(
+    gen_random_uuid(),
+    'Luxury Waterfront Villa',
+    'luxury-waterfront-villa',
+    'Stunning waterfront villa with panoramic ocean views, private beach access, and world-class amenities.',
+    'for_sale',
+    'villa',
+    2500000.00,
+    5,
+    4,
+    4500,
+    '123 Ocean Drive, Waterfront District',
+    'Lagos, Nigeria',
+    'NGN',
+    ARRAY['Ocean View', 'Private Beach', 'Swimming Pool', 'Garden', 'Garage'],
+    ARRAY['WiFi', 'Air Conditioning', 'Security System', 'Backup Generator'],
+    true,
+    true,
+    'https://example.com/virtual-tour-1',
+    'Luxury Waterfront Villa for Sale - ABL Natasha Enterprises',
+    'Exclusive waterfront villa with ocean views and premium amenities in Lagos'
+),
+(
+    gen_random_uuid(),
+    'Modern City Apartment',
+    'modern-city-apartment',
+    'Contemporary apartment in the heart of the city with modern amenities and excellent connectivity.',
+    'for_rent',
+    'apartment',
+    450000.00,
+    2,
+    2,
+    1200,
+    '456 City Center Boulevard, Victoria Island',
+    'Lagos, Nigeria',
+    'NGN',
+    ARRAY['City View', 'Balcony', 'Modern Kitchen', 'Parking Space'],
+    ARRAY['WiFi', 'Air Conditioning', 'Gym Access', 'Concierge Service'],
+    true,
+    true,
+    'https://example.com/virtual-tour-2',
+    'Modern City Apartment for Rent - ABL Natasha Enterprises',
+    'Stylish 2-bedroom apartment in prime Lagos location with modern amenities'
+),
+(
+    gen_random_uuid(),
+    'Executive Office Space',
+    'executive-office-space',
+    'Premium office space in a prestigious business district, perfect for corporate headquarters.',
+    'lease',
+    'commercial',
+    800000.00,
+    0,
+    2,
+    2000,
+    '789 Business District, Ikoyi',
+    'Lagos, Nigeria',
+    'NGN',
+    ARRAY['Conference Rooms', 'Reception Area', 'Parking', 'Security'],
+    ARRAY['High Speed Internet', 'Air Conditioning', '24/7 Security', 'Backup Power'],
+    true,
+    false,
+    'https://example.com/virtual-tour-3',
+    'Executive Office Space for Lease - ABL Natasha Enterprises',
+    'Premium office space in Lagos business district with modern facilities'
+),
+(
+    gen_random_uuid(),
+    'Luxury Resort Suite',
+    'luxury-resort-suite',
+    'Exclusive resort suite with premium amenities, perfect for luxury getaways and business retreats.',
+    'booking',
+    'resort',
+    85000.00,
+    1,
+    1,
+    800,
+    '321 Resort Paradise, Lekki Peninsula',
+    'Lagos, Nigeria',
+    'NGN',
+    ARRAY['Ocean View', 'Private Terrace', 'Kitchenette', 'Resort Access'],
+    ARRAY['Room Service', 'Spa Access', 'Pool Access', 'Concierge'],
+    true,
+    true,
+    'https://example.com/virtual-tour-4',
+    'Luxury Resort Suite Booking - ABL Natasha Enterprises',
+    'Exclusive resort suite with ocean views and premium amenities in Lekki'
+);

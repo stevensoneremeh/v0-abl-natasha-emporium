@@ -10,9 +10,54 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import { EnhancedNavigation } from "@/components/enhanced-navigation"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
-import { VideoHero } from "@/components/video-hero"
+import { VideoCarouselHero } from "@/components/video-carousel-hero"
 import { StructuredData } from "@/components/structured-data"
 import { LazyLoadWrapper } from "@/components/lazy-load-wrapper"
+
+const heroVideos = [
+  {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Using your uploaded video
+    poster: "/luxury-real-estate-exterior.png",
+    title: "Luxury Real Estate",
+    subtitle: "Discover premium properties and exclusive investment opportunities in prime locations",
+  },
+  {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Reusing the same video until you provide Video 3
+    poster: "/modern-interior.png",
+    title: "Modern Interiors",
+    subtitle: "Experience sophisticated design and contemporary luxury living spaces",
+  },
+  {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Reusing the same video until you provide Video 4
+    poster: "/luxury-amenities-pool.png",
+    title: "Premium Amenities",
+    subtitle: "Indulge in world-class facilities and exclusive luxury amenities",
+  },
+  {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Reusing the same video until you provide Video 5
+    poster: "/business-office-space.png",
+    title: "Executive Spaces",
+    subtitle: "Professional environments designed for success and productivity",
+  },
+  {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Reusing the same video until you provide Video 6
+    poster: "/luxury-resort-suite.png",
+    title: "Resort Living",
+    subtitle: "Experience the ultimate in luxury hospitality and comfort",
+  },
+  {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Reusing the same video until you provide Video 7
+    poster: "/investment-opportunity.png",
+    title: "Investment Opportunities",
+    subtitle: "Secure your future with premium real estate investments",
+  },
+  {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Reusing the same video until you provide Video 8
+    poster: "/luxury-lifestyle.png",
+    title: "Luxury Lifestyle",
+    subtitle: "Embrace the finest things in life with our exclusive collection",
+  },
+]
 
 const categories = [
   {
@@ -223,28 +268,8 @@ export default function HomePage() {
 
       <EnhancedNavigation />
 
-      <VideoHero
-        videoSrc="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4"
-        posterImage="/luxury-lifestyle-hero.png"
-        overlayImages={[
-          {
-            src: "/luxury-real-estate-showcase.png",
-            alt: "Luxury Real Estate",
-            className: "top-20 left-10 hidden lg:block",
-          },
-          {
-            src: "/premium-wine-display.png",
-            alt: "Premium Wines",
-            className: "top-32 right-16 hidden lg:block",
-          },
-          {
-            src: "/luxury-car-showcase.png",
-            alt: "Luxury Cars",
-            className: "bottom-32 left-20 hidden xl:block",
-          },
-        ]}
-        title="Luxury Redefined"
-        subtitle="Discover an exclusive collection of premium real estate, vintage wines, exotic automobiles, luxury hair products, and exquisite fragrances."
+      <VideoCarouselHero
+        videos={heroVideos}
         primaryCTA={{
           text: "Explore Collection",
           href: "#featured-categories",

@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
-import { Menu, X, ShoppingBag, User, Search, Heart } from "lucide-react"
+import { Menu, X, ShoppingBag, User, Search, Heart, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
@@ -10,6 +10,18 @@ import { useAuth } from "@/lib/auth-context"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Image from "next/image"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useCart } from "@/contexts/cart-context"
+import { CartDrawer } from "@/components/cart-drawer"
 
 const navigationItems = [
   { name: "Home", href: "/" },
@@ -25,6 +37,27 @@ export function EnhancedNavigation() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const { user, isGuest } = useAuth()
+  const { itemCount, openCart } = useCart()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        toast.error("Error signing out: " + error.message)
+        return
+      }
+
+      toast.success("Signed out successfully")
+      router.push("/")
+      router.refresh()
+    } catch (error) {
+      toast.error("An unexpected error occurred")
+      console.error("Sign out error:", error)
+    }
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -123,22 +156,19 @@ export function EnhancedNavigation() {
 
             {/* Wishlist */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="ghost" size="sm" className="relative hover:bg-primary/10">
-                <Heart className="h-4 w-4" />
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-accent text-accent-foreground">
-                  3
-                </Badge>
-              </Button>
+              <Link href="/wishlist">
+                <Button variant="ghost" size="sm" className="relative hover:bg-primary/10">
+                  <Heart className="h-4 w-4" />
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-accent text-accent-foreground">
+                    3
+                  </Badge>
+                </Button>
+              </Link>
             </motion.div>
 
             {/* Cart */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="ghost" size="sm" className="relative hover:bg-primary/10">
-                <ShoppingBag className="h-4 w-4" />
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-primary text-primary-foreground">
-                  2
-                </Badge>
-              </Button>
+              <CartDrawer />
             </motion.div>
 
             {/* Theme Toggle */}
@@ -147,12 +177,42 @@ export function EnhancedNavigation() {
             {/* User Account */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               {user ? (
-                <Link href="/dashboard">
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-                    <User className="h-4 w-4 mr-2" />
-                    {user.email?.split("@")[0]}
-                  </Button>
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="hover:bg-primary/10">
+                      <User className="h-4 w-4 mr-2" />
+                      {user.email?.split("@")[0]}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer">
+                        <User className="h-4 w-4 mr-2" />
+                        My Account
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/orders" className="cursor-pointer">
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        My Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/wishlist" className="cursor-pointer">
+                        <Heart className="h-4 w-4 mr-2" />
+                        Wishlist
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="cursor-pointer text-red-600 focus:text-red-600"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <Link href="/auth/login">
                   <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
@@ -227,23 +287,48 @@ export function EnhancedNavigation() {
                       <Search className="h-4 w-4 mr-2" />
                       Search
                     </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ShoppingBag className="h-4 w-4" />
-                    </Button>
+                    <Link href="/wishlist">
+                      <Button variant="ghost" size="sm">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <CartDrawer />
                     {/* Theme Toggle */}
                     <ThemeToggle />
                   </div>
 
                   {user ? (
-                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start">
-                        <User className="h-4 w-4 mr-2" />
-                        My Account
+                    <div className="space-y-2">
+                      <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <User className="h-4 w-4 mr-2" />
+                          My Account
+                        </Button>
+                      </Link>
+                      <Link href="/orders" onClick={() => setIsOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <ShoppingBag className="h-4 w-4 mr-2" />
+                          My Orders
+                        </Button>
+                      </Link>
+                      <Link href="/wishlist" onClick={() => setIsOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <Heart className="h-4 w-4 mr-2" />
+                          Wishlist
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => {
+                          setIsOpen(false)
+                          handleSignOut()
+                        }}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
                       </Button>
-                    </Link>
+                    </div>
                   ) : (
                     <Link href="/auth/login" onClick={() => setIsOpen(false)}>
                       <Button className="w-full bg-gradient-to-r from-primary to-accent">Sign In</Button>
