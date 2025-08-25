@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Search, Filter, Edit, Trash2, Eye } from "lucide-react"
-import { getProductsByCategory, getCategories } from "@/lib/database-client"
+// import { getProductsByCategory, getCategories } from "@/lib/database-client"
 import { formatCurrency } from "@/lib/utils/currency"
 import Link from "next/link"
 import Image from "next/image"
@@ -19,14 +19,40 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const categories = await getCategories()
+  const categories = [
+    { id: "1", name: "Real Estate", slug: "real-estate" },
+    { id: "2", name: "Wines", slug: "wines" },
+    { id: "3", name: "Cars", slug: "cars" },
+    { id: "4", name: "Hair & Wigs", slug: "hair-wigs" },
+    { id: "5", name: "Perfumes", slug: "perfumes" },
+  ]
 
-  // Get all products for now (in production, you'd want proper pagination)
-  const allProducts = []
-  for (const category of categories) {
-    const products = await getProductsByCategory(category.id, { limit: 100 })
-    allProducts.push(...products)
-  }
+  const allProducts = [
+    {
+      id: "1",
+      name: "Luxury Penthouse - Victoria Island",
+      price: 850000000,
+      images: ["/luxury-penthouse-victoria-island.png"],
+      category_id: "1",
+      categories: { name: "Real Estate" },
+      stock_quantity: 1,
+      low_stock_threshold: 1,
+      is_featured: true,
+      is_active: true,
+    },
+    {
+      id: "2",
+      name: "Dom Pérignon Vintage 2013",
+      price: 450000,
+      images: ["/dom-perignon-vintage.png"],
+      category_id: "2",
+      categories: { name: "Wines" },
+      stock_quantity: 5,
+      low_stock_threshold: 2,
+      is_featured: true,
+      is_active: true,
+    },
+  ]
 
   const filteredProducts = allProducts.filter((product) => {
     if (searchParams.filter === "low-stock") {
