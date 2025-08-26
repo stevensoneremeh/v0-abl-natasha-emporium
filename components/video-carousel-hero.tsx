@@ -197,7 +197,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
                   onError={handleVideoError}
                   controls={false}
                   style={{ display: videoError ? "none" : "block" }}
-                  {...({ "webkit-playsinline": true } as any)}
+                  webkit-playsinline="true"
                 >
                   <source src={currentVideo.src} type="video/mp4" />
                 </video>
