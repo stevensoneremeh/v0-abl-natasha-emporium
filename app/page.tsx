@@ -16,43 +16,43 @@ import { LazyLoadWrapper } from "@/components/lazy-load-wrapper"
 
 const heroVideos = [
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Your uploaded video
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/uSlp-xr3zBP8lXR1SMwW6h/public/video2.mp4",
     poster: "/luxury-real-estate-exterior.png",
     title: "Luxury Real Estate",
     subtitle: "Discover premium properties and exclusive investment opportunities in prime locations",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4", // Using your video for all slides until you provide Videos 3-8
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/9ZegVuzzfVAextXiyyFx2w/public/video3.mp4",
     poster: "/modern-interior.png",
     title: "Modern Interiors",
     subtitle: "Experience sophisticated design and contemporary luxury living spaces",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4",
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/tKGZJFOS96klOq8lOmq4Uo/public/video4.mp4",
     poster: "/luxury-amenities-pool.png",
     title: "Premium Amenities",
     subtitle: "Indulge in world-class facilities and exclusive luxury amenities",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4",
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/ItXhS5i8c4HH1Qg67JVrEy/public/video5.mp4",
     poster: "/business-office-space.png",
     title: "Executive Spaces",
     subtitle: "Professional environments designed for success and productivity",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4",
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/A9TGfgDzmNJeLHdjY9YBK_/public/video6.mp4",
     poster: "/luxury-resort-suite.png",
     title: "Resort Living",
     subtitle: "Experience the ultimate in luxury hospitality and comfort",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4",
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/PnAbaYvNZkxh5ZPXHTrYao/public/video7.mp4",
     poster: "/investment-opportunity.png",
     title: "Investment Opportunities",
     subtitle: "Secure your future with premium real estate investments",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/64bb5c83-2bb1-4c22-8f9f-642334f46cac-JD0X7MilUmknGqgTkMt9xBhmQ89oUF.mp4",
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/7Lc-Lh0f0H__2NeVCpJlZ-/public/video8.mp4",
     poster: "/luxury-lifestyle.png",
     title: "Luxury Lifestyle",
     subtitle: "Embrace the finest things in life with our exclusive collection",
