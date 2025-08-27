@@ -86,44 +86,86 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
       try {
         video.src = currentVideo.src
         video.poster = currentVideo.poster
-        video.muted = true // Ensure muted for autoplay
+        video.muted = true
         video.playsInline = true
         video.setAttribute("webkit-playsinline", "true")
         video.setAttribute("playsinline", "true")
         video.setAttribute("autoplay", "true")
         video.setAttribute("muted", "true")
-        video.preload = "auto" // Changed from metadata to auto for better loading
+        video.preload = "auto"
+
+        const checkVideoExists = async () => {
+          try {
+            const response = await fetch(currentVideo.src, { method: "HEAD" })
+            return response.ok
+          } catch {
+            return false
+          }
+        }
+
+        const videoExists = await checkVideoExists()
+
+        if (!videoExists) {
+          console.log("[v0] Video file not found, using poster image")
+          setVideoError(true)
+          setVideoLoaded(true)
+          setShowVideo(true)
+          setIsTransitioning(false)
+          return
+        }
 
         video.load()
 
-        await new Promise((resolve, reject) => {
+        const loadPromise = new Promise<void>((resolve) => {
           const timeout = setTimeout(() => {
-            reject(new Error("Video loading timeout"))
-          }, 10000) // 10 second timeout
+            console.log("[v0] Video loading timeout, using poster fallback")
+            setVideoError(true)
+            setVideoLoaded(true)
+            setShowVideo(true)
+            setIsTransitioning(false)
+            resolve()
+          }, 15000)
 
           const onCanPlay = () => {
             clearTimeout(timeout)
             setVideoLoaded(true)
-            video.removeEventListener("canplay", onCanPlay)
-            video.removeEventListener("error", onError)
-            resolve(void 0)
+            setVideoError(false)
+            cleanup()
+            resolve()
           }
 
-          const onError = (e: Event) => {
+          const onLoadedData = () => {
             clearTimeout(timeout)
+            setVideoLoaded(true)
+            setVideoError(false)
+            cleanup()
+            resolve()
+          }
+
+          const onError = () => {
+            clearTimeout(timeout)
+            setVideoError(true)
+            setVideoLoaded(true)
+            setShowVideo(true)
+            setIsTransitioning(false)
+            cleanup()
+            resolve()
+          }
+
+          const cleanup = () => {
             video.removeEventListener("canplay", onCanPlay)
             video.removeEventListener("error", onError)
-            reject(e)
+            video.removeEventListener("loadeddata", onLoadedData)
           }
 
           video.addEventListener("canplay", onCanPlay)
+          video.addEventListener("loadeddata", onLoadedData)
           video.addEventListener("error", onError)
         })
 
-        let playAttempts = 0
-        const maxAttempts = 3
+        await loadPromise
 
-        const attemptPlay = async () => {
+        if (!videoError && videoLoaded) {
           try {
             await video.play()
             setIsPlaying(true)
@@ -131,24 +173,18 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
             setIsTransitioning(false)
 
             if (video.duration && video.duration > 0) {
-              setVideoDuration(Math.max(video.duration * 1000, 50000)) // Minimum 50 seconds
+              setVideoDuration(Math.max(video.duration * 1000, 50000))
             }
           } catch (error) {
-            playAttempts++
-            if (playAttempts < maxAttempts) {
-              setTimeout(attemptPlay, 1000) // Retry after 1 second
-            } else {
-              setIsPlaying(false)
-              setShowVideo(true)
-              setIsTransitioning(false)
-              setVideoLoaded(true)
-            }
+            console.log("[v0] Autoplay failed, showing poster with play button")
+            setIsPlaying(false)
+            setShowVideo(true)
+            setIsTransitioning(false)
           }
         }
-
-        await attemptPlay()
       } catch (error) {
-        console.error("Video loading failed:", error)
+        console.log("[v0] Video loading failed, using poster fallback")
+        setVideoError(true)
         setIsPlaying(false)
         setShowVideo(true)
         setIsTransitioning(false)
@@ -156,9 +192,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
       }
     }
 
-    const loadTimeout = setTimeout(loadAndPlayVideo, 100)
-
-    return () => clearTimeout(loadTimeout)
+    loadAndPlayVideo()
   }, [currentVideoIndex, currentVideo])
 
   useEffect(() => {
@@ -230,47 +264,34 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
             transition={{ duration: 0.8, ease: "easeInOut" }}
             className="absolute inset-0"
           >
-            {showVideo ? (
-              <div className="relative w-full h-full">
-                <video
-                  ref={videoRef}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop={false}
-                  playsInline
-                  poster={currentVideo.poster}
-                  preload="auto"
-                  onError={handleVideoError}
-                  controls={false}
-                  style={{ display: videoError ? "none" : "block" }}
-                  webkit-playsinline="true"
-                  x5-video-player-type="h5"
-                  x5-video-player-fullscreen="true"
-                  x5-video-orientation="portraint"
-                >
-                  <source src={currentVideo.src} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-                {(videoError || (!videoLoaded && !isPlaying)) && (
-                  <Image
-                    src={currentVideo.poster || "/placeholder.svg"}
-                    alt="Hero background"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                )}
-              </div>
-            ) : (
+            <div className="relative w-full h-full">
+              <video
+                ref={videoRef}
+                className={`absolute inset-0 w-full h-full object-cover ${videoError ? "opacity-0" : "opacity-100"}`}
+                autoPlay
+                muted
+                loop={false}
+                playsInline
+                poster={currentVideo.poster}
+                preload="auto"
+                onError={handleVideoError}
+                controls={false}
+                webkit-playsinline="true"
+                x5-video-player-type="h5"
+                x5-video-player-fullscreen="true"
+                x5-video-orientation="portraint"
+              >
+                <source src={currentVideo.src} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
               <Image
                 src={currentVideo.poster || "/placeholder.svg"}
                 alt="Hero background"
                 fill
-                className="object-cover"
+                className={`object-cover transition-opacity duration-500 ${videoError || !videoLoaded ? "opacity-100" : "opacity-0"}`}
                 priority
               />
-            )}
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
