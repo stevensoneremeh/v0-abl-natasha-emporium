@@ -115,9 +115,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
         setIsPlaying(true)
         setShowVideo(true)
         setIsTransitioning(false)
-        console.log("[v0] Video playing successfully")
       } catch (error) {
-        console.log("[v0] Video autoplay failed, showing poster:", error)
         setIsPlaying(false)
         setShowVideo(true)
         setIsTransitioning(false)
@@ -129,7 +127,6 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
   }, [currentVideoIndex, prefersReducedMotion, currentVideo])
 
   const handleVideoError = () => {
-    console.log("[v0] Video error occurred, falling back to poster")
     setVideoError(true)
     setShowVideo(true)
     setIsPlaying(false)

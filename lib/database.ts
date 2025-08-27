@@ -52,8 +52,6 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const supabase = createClient()
 
-  console.log("[v0] Fetching category with slug:", slug)
-
   const { data: checkData, error: checkError } = await supabase.from("categories").select("*").eq("slug", slug)
 
   if (checkError) {
@@ -61,10 +59,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     return null
   }
 
-  console.log("[v0] Found categories with slug:", checkData?.length || 0)
-
   if (!checkData || checkData.length === 0) {
-    console.log("[v0] No category found with slug:", slug)
     return null
   }
 
