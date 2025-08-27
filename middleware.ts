@@ -1,7 +1,22 @@
-import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+let createServerClient: any
+
+try {
+  const supabaseSSR = require("@supabase/ssr")
+  createServerClient = supabaseSSR.createServerClient
+} catch (error) {
+  console.warn("@supabase/ssr package not found, skipping auth middleware")
+  createServerClient = null
+}
+
 export async function middleware(request: NextRequest) {
+  if (!createServerClient) {
+    return NextResponse.next({
+      request,
+    })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })

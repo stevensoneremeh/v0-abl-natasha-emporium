@@ -1,7 +1,16 @@
 import "server-only"
-import { createServerClient as createSupabaseServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { cache } from "react"
+
+let createSupabaseServerClient: any
+
+try {
+  const supabaseSSR = require("@supabase/ssr")
+  createSupabaseServerClient = supabaseSSR.createServerClient
+} catch (error) {
+  console.warn("@supabase/ssr package not found, using fallback client")
+  createSupabaseServerClient = null
+}
 
 // Check if Supabase environment variables are available
 export const isSupabaseConfigured =
@@ -12,8 +21,8 @@ export const isSupabaseConfigured =
 
 // Create a cached version of the Supabase client for Server Components
 export const createClient = cache(() => {
-  if (!isSupabaseConfigured) {
-    console.warn("Supabase environment variables are not set. Using dummy client.")
+  if (!isSupabaseConfigured || !createSupabaseServerClient) {
+    console.warn("Supabase not configured or package missing. Using dummy client.")
     return {
       from: () => ({
         select: () => ({

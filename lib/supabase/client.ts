@@ -1,4 +1,12 @@
-import { createBrowserClient } from "@supabase/ssr"
+let createBrowserClient: any
+
+try {
+  const supabaseSSR = require("@supabase/ssr")
+  createBrowserClient = supabaseSSR.createBrowserClient
+} catch (error) {
+  console.warn("@supabase/ssr package not found, using fallback client")
+  createBrowserClient = null
+}
 
 // Check if Supabase environment variables are available
 export const isSupabaseConfigured =
@@ -9,8 +17,8 @@ export const isSupabaseConfigured =
 
 // Create browser client for client components
 export const createClient = () => {
-  if (!isSupabaseConfigured) {
-    console.warn("Supabase environment variables are not set. Using dummy client.")
+  if (!isSupabaseConfigured || !createBrowserClient) {
+    console.warn("Supabase not configured or package missing. Using dummy client.")
     return {
       from: () => ({
         select: () => ({
