@@ -179,14 +179,6 @@ html:not(.dark) {
     border: 1px solid rgba(212, 175, 55, 0.3);
   }
 
-  .luxury-shadow {
-    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
-  }
-
-  .dark .luxury-shadow {
-    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
-  }
-
   .luxury-text-gradient {
     background: linear-gradient(135deg, oklch(0.205 0 0) 0%, oklch(0.97 0 0) 100%);
     -webkit-background-clip: text;
@@ -215,7 +207,7 @@ html:not(.dark) {
   }
 
   .card-luxury:hover {
-    @apply border-primary/50 luxury-shadow;
+    @apply border-primary/50 shadow-2xl;
   }
 
   /* Enhanced button styles */
@@ -224,7 +216,7 @@ html:not(.dark) {
   }
 
   .btn-luxury:hover {
-    @apply luxury-shadow transform scale-105;
+    @apply shadow-2xl transform scale-105;
   }
 
   /* Text balance for better typography */
