@@ -33,6 +33,8 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
   const [videoError, setVideoError] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [videoLoaded, setVideoLoaded] = useState(false)
+  const [videoDuration, setVideoDuration] = useState(50000) // 50 seconds minimum
+  const [videoProgress, setVideoProgress] = useState(0)
 
   const currentVideo = videos[currentVideoIndex]
 
@@ -66,10 +68,10 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
 
     const interval = setInterval(() => {
       nextVideo()
-    }, 7000) // 7 seconds
+    }, videoDuration) // Use dynamic duration (minimum 50 seconds)
 
     return () => clearInterval(interval)
-  }, [currentVideoIndex, isPlaying, prefersReducedMotion])
+  }, [currentVideoIndex, isPlaying, prefersReducedMotion, videoDuration])
 
   useEffect(() => {
     const video = videoRef.current
@@ -78,44 +80,75 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
     setVideoError(false)
     setVideoLoaded(false)
     setIsPlaying(false)
-
-    if (prefersReducedMotion) {
-      video.pause()
-      setIsPlaying(false)
-      setShowVideo(false)
-      return
-    }
+    setVideoProgress(0)
 
     const loadAndPlayVideo = async () => {
       try {
         video.src = currentVideo.src
         video.poster = currentVideo.poster
+        video.muted = true // Ensure muted for autoplay
+        video.playsInline = true
+        video.setAttribute("webkit-playsinline", "true")
+        video.setAttribute("playsinline", "true")
+        video.setAttribute("autoplay", "true")
+        video.setAttribute("muted", "true")
+        video.preload = "auto" // Changed from metadata to auto for better loading
 
         video.load()
 
         await new Promise((resolve, reject) => {
-          const onLoadedData = () => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Video loading timeout"))
+          }, 10000) // 10 second timeout
+
+          const onCanPlay = () => {
+            clearTimeout(timeout)
             setVideoLoaded(true)
-            video.removeEventListener("loadeddata", onLoadedData)
+            video.removeEventListener("canplay", onCanPlay)
             video.removeEventListener("error", onError)
             resolve(void 0)
           }
 
           const onError = (e: Event) => {
-            video.removeEventListener("loadeddata", onLoadedData)
+            clearTimeout(timeout)
+            video.removeEventListener("canplay", onCanPlay)
             video.removeEventListener("error", onError)
             reject(e)
           }
 
-          video.addEventListener("loadeddata", onLoadedData)
+          video.addEventListener("canplay", onCanPlay)
           video.addEventListener("error", onError)
         })
 
-        await video.play()
-        setIsPlaying(true)
-        setShowVideo(true)
-        setIsTransitioning(false)
+        let playAttempts = 0
+        const maxAttempts = 3
+
+        const attemptPlay = async () => {
+          try {
+            await video.play()
+            setIsPlaying(true)
+            setShowVideo(true)
+            setIsTransitioning(false)
+
+            if (video.duration && video.duration > 0) {
+              setVideoDuration(Math.max(video.duration * 1000, 50000)) // Minimum 50 seconds
+            }
+          } catch (error) {
+            playAttempts++
+            if (playAttempts < maxAttempts) {
+              setTimeout(attemptPlay, 1000) // Retry after 1 second
+            } else {
+              setIsPlaying(false)
+              setShowVideo(true)
+              setIsTransitioning(false)
+              setVideoLoaded(true)
+            }
+          }
+        }
+
+        await attemptPlay()
       } catch (error) {
+        console.error("Video loading failed:", error)
         setIsPlaying(false)
         setShowVideo(true)
         setIsTransitioning(false)
@@ -123,8 +156,25 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
       }
     }
 
-    loadAndPlayVideo()
-  }, [currentVideoIndex, prefersReducedMotion, currentVideo])
+    const loadTimeout = setTimeout(loadAndPlayVideo, 100)
+
+    return () => clearTimeout(loadTimeout)
+  }, [currentVideoIndex, currentVideo])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !isPlaying) return
+
+    const updateProgress = () => {
+      if (video.duration) {
+        const progress = (video.currentTime / video.duration) * 100
+        setVideoProgress(progress)
+      }
+    }
+
+    const interval = setInterval(updateProgress, 100)
+    return () => clearInterval(interval)
+  }, [isPlaying])
 
   const handleVideoError = () => {
     setVideoError(true)
@@ -190,13 +240,17 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
                   loop={false}
                   playsInline
                   poster={currentVideo.poster}
-                  preload="metadata"
+                  preload="auto"
                   onError={handleVideoError}
                   controls={false}
                   style={{ display: videoError ? "none" : "block" }}
                   webkit-playsinline="true"
+                  x5-video-player-type="h5"
+                  x5-video-player-fullscreen="true"
+                  x5-video-orientation="portraint"
                 >
                   <source src={currentVideo.src} type="video/mp4" />
+                  Your browser does not support the video tag.
                 </video>
                 {(videoError || (!videoLoaded && !isPlaying)) && (
                   <Image
@@ -328,10 +382,8 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30 z-20">
         <motion.div
           className="h-full bg-luxury-gold"
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{ duration: 7, ease: "linear" }}
-          key={currentVideoIndex}
+          style={{ width: `${videoProgress}%` }}
+          transition={{ duration: 0.1, ease: "linear" }}
         />
       </div>
     </section>

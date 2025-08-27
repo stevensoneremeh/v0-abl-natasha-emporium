@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Playfair_Display, Inter } from "next/font/google"
+import { Playfair_Display, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
 import { WishlistProvider } from "@/contexts/wishlist-context"
@@ -15,15 +15,15 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-playfair",
+  weight: ["400", "500", "600", "700", "800", "900"],
 })
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-dm-sans",
+  weight: ["400", "500", "600", "700"],
 })
-
-const baseUrl = safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL).toString()
 
 export const metadata: Metadata = {
   title: "ABL NATASHA ENTERPRISES - Luxury Lifestyle Collection",
@@ -91,7 +91,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable} antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable} antialiased`} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -100,8 +100,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "ABL NATASHA ENTERPRISES",
-              url: baseUrl,
-              logo: `${baseUrl}/og-image.jpg`,
+              url: safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL).toString(),
+              logo: `${safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL).toString()}/og-image.jpg`,
               description:
                 "Luxury lifestyle collection featuring real estate, wines, cars, hair products, and fragrances.",
               sameAs: [
