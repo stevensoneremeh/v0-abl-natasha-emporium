@@ -21,25 +21,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [guestId, setGuestId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isClient, setIsClient] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isClient) return
+
     const getInitialSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
 
-      if (!session?.user) {
-        let storedGuestId = localStorage.getItem("guest_id")
-        if (!storedGuestId) {
-          storedGuestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-          localStorage.setItem("guest_id", storedGuestId)
+        if (!session?.user) {
+          let storedGuestId = localStorage.getItem("guest_id")
+          if (!storedGuestId) {
+            storedGuestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            localStorage.setItem("guest_id", storedGuestId)
+          }
+          setGuestId(storedGuestId)
         }
-        setGuestId(storedGuestId)
+      } catch (error) {
+        console.warn("Auth session error:", error)
+        const fallbackGuestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        setGuestId(fallbackGuestId)
+        if (typeof window !== "undefined") {
+          localStorage.setItem("guest_id", fallbackGuestId)
+        }
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
 
     getInitialSession()
@@ -51,21 +67,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (session?.user) {
         setGuestId(null)
-        localStorage.removeItem("guest_id")
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("guest_id")
+        }
       } else {
         const newGuestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         setGuestId(newGuestId)
-        localStorage.setItem("guest_id", newGuestId)
+        if (typeof window !== "undefined") {
+          localStorage.setItem("guest_id", newGuestId)
+        }
       }
 
       setLoading(false)
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [supabase.auth, isClient])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.warn("Sign out error:", error)
+    }
   }
 
   const value = {

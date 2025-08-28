@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Play, Pause, ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 interface VideoCarouselHeroProps {
   videos: Array<{
@@ -28,12 +29,9 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const [showVideo, setShowVideo] = useState(true)
-  const [videoError, setVideoError] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
+  const [videoError, setVideoError] = useState(true) // Start with error state for better fallback
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const [videoLoaded, setVideoLoaded] = useState(false)
-  const [videoDuration, setVideoDuration] = useState(50000) // 50 seconds minimum
   const [videoProgress, setVideoProgress] = useState(0)
 
   const currentVideo = videos[currentVideoIndex]
@@ -41,15 +39,6 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
     setPrefersReducedMotion(mediaQuery.matches)
-
-    const checkMobile = () => {
-      setIsMobile(
-        window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-      )
-    }
-
-    checkMobile()
-    window.addEventListener("resize", checkMobile)
 
     const handleMediaQueryChange = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches)
@@ -59,167 +48,101 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
 
     return () => {
       mediaQuery.removeEventListener("change", handleMediaQueryChange)
-      window.removeEventListener("resize", checkMobile)
     }
   }, [])
 
   useEffect(() => {
-    if (prefersReducedMotion || !isPlaying) return
+    if (prefersReducedMotion) return
 
     const interval = setInterval(() => {
       nextVideo()
-    }, videoDuration) // Use dynamic duration (minimum 50 seconds)
+    }, 50000) // Fixed 50 second duration
 
     return () => clearInterval(interval)
-  }, [currentVideoIndex, isPlaying, prefersReducedMotion, videoDuration])
+  }, [currentVideoIndex, prefersReducedMotion])
 
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
-    setVideoError(false)
-    setVideoLoaded(false)
+    // Reset states
+    setVideoError(true) // Start with error state
     setIsPlaying(false)
     setVideoProgress(0)
+    setShowVideo(true) // Always show the section
 
-    const loadAndPlayVideo = async () => {
+    // Simple video loading attempt
+    const loadVideo = async () => {
       try {
         video.src = currentVideo.src
         video.poster = currentVideo.poster
         video.muted = true
         video.playsInline = true
-        video.setAttribute("webkit-playsinline", "true")
-        video.setAttribute("playsinline", "true")
-        video.setAttribute("autoplay", "true")
-        video.setAttribute("muted", "true")
-        video.preload = "auto"
+        video.preload = "metadata"
 
-        const checkVideoExists = async () => {
-          try {
-            const response = await fetch(currentVideo.src, { method: "HEAD" })
-            return response.ok
-          } catch {
-            return false
-          }
-        }
-
-        const videoExists = await checkVideoExists()
-
-        if (!videoExists) {
-          console.log("[v0] Video file not found, using poster image")
+        // Set a reasonable timeout for video loading
+        const loadTimeout = setTimeout(() => {
           setVideoError(true)
-          setVideoLoaded(true)
-          setShowVideo(true)
           setIsTransitioning(false)
-          return
-        }
+        }, 10000)
+
+        video.addEventListener(
+          "loadeddata",
+          () => {
+            clearTimeout(loadTimeout)
+            setVideoError(false)
+            // Try to play the video
+            video
+              .play()
+              .then(() => {
+                setIsPlaying(true)
+              })
+              .catch(() => {
+                setIsPlaying(false)
+              })
+            setIsTransitioning(false)
+          },
+          { once: true },
+        )
+
+        video.addEventListener(
+          "error",
+          () => {
+            clearTimeout(loadTimeout)
+            setVideoError(true)
+            setIsTransitioning(false)
+          },
+          { once: true },
+        )
 
         video.load()
-
-        const loadPromise = new Promise<void>((resolve) => {
-          const timeout = setTimeout(() => {
-            console.log("[v0] Video loading timeout, using poster fallback")
-            setVideoError(true)
-            setVideoLoaded(true)
-            setShowVideo(true)
-            setIsTransitioning(false)
-            resolve()
-          }, 15000)
-
-          const onCanPlay = () => {
-            clearTimeout(timeout)
-            setVideoLoaded(true)
-            setVideoError(false)
-            cleanup()
-            resolve()
-          }
-
-          const onLoadedData = () => {
-            clearTimeout(timeout)
-            setVideoLoaded(true)
-            setVideoError(false)
-            cleanup()
-            resolve()
-          }
-
-          const onError = () => {
-            clearTimeout(timeout)
-            setVideoError(true)
-            setVideoLoaded(true)
-            setShowVideo(true)
-            setIsTransitioning(false)
-            cleanup()
-            resolve()
-          }
-
-          const cleanup = () => {
-            video.removeEventListener("canplay", onCanPlay)
-            video.removeEventListener("error", onError)
-            video.removeEventListener("loadeddata", onLoadedData)
-          }
-
-          video.addEventListener("canplay", onCanPlay)
-          video.addEventListener("loadeddata", onLoadedData)
-          video.addEventListener("error", onError)
-        })
-
-        await loadPromise
-
-        if (!videoError && videoLoaded) {
-          try {
-            await video.play()
-            setIsPlaying(true)
-            setShowVideo(true)
-            setIsTransitioning(false)
-
-            if (video.duration && video.duration > 0) {
-              setVideoDuration(Math.max(video.duration * 1000, 50000))
-            }
-          } catch (error) {
-            console.log("[v0] Autoplay failed, showing poster with play button")
-            setIsPlaying(false)
-            setShowVideo(true)
-            setIsTransitioning(false)
-          }
-        }
       } catch (error) {
-        console.log("[v0] Video loading failed, using poster fallback")
         setVideoError(true)
-        setIsPlaying(false)
-        setShowVideo(true)
         setIsTransitioning(false)
-        setVideoLoaded(true)
       }
     }
 
-    loadAndPlayVideo()
+    loadVideo()
   }, [currentVideoIndex, currentVideo])
 
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !isPlaying) return
+    if (!video || !isPlaying || videoError) return
 
     const updateProgress = () => {
-      if (video.duration) {
+      if (video.duration && video.duration > 0) {
         const progress = (video.currentTime / video.duration) * 100
         setVideoProgress(progress)
       }
     }
 
-    const interval = setInterval(updateProgress, 100)
+    const interval = setInterval(updateProgress, 1000)
     return () => clearInterval(interval)
-  }, [isPlaying])
-
-  const handleVideoError = () => {
-    setVideoError(true)
-    setShowVideo(true)
-    setIsPlaying(false)
-    setIsTransitioning(false)
-  }
+  }, [isPlaying, videoError])
 
   const togglePlayPause = () => {
     const video = videoRef.current
-    if (!video || !videoLoaded) return
+    if (!video || videoError) return
 
     if (isPlaying) {
       video.pause()
@@ -228,9 +151,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
       video
         .play()
         .then(() => setIsPlaying(true))
-        .catch(() => {
-          setIsPlaying(false)
-        })
+        .catch(() => setIsPlaying(false))
     }
   }
 
@@ -254,6 +175,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
 
   return (
     <section className="relative h-screen min-h-[600px] overflow-hidden">
+      {/* Background Media */}
       <div className="absolute inset-0">
         <AnimatePresence mode="wait">
           <motion.div
@@ -265,39 +187,41 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
             className="absolute inset-0"
           >
             <div className="relative w-full h-full">
-              <video
-                ref={videoRef}
-                className={`absolute inset-0 w-full h-full object-cover ${videoError ? "opacity-0" : "opacity-100"}`}
-                autoPlay
-                muted
-                loop={false}
-                playsInline
-                poster={currentVideo.poster}
-                preload="auto"
-                onError={handleVideoError}
-                controls={false}
-                webkit-playsinline="true"
-                x5-video-player-type="h5"
-                x5-video-player-fullscreen="true"
-                x5-video-orientation="portraint"
-              >
-                <source src={currentVideo.src} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
               <Image
-                src={currentVideo.poster || "/placeholder.svg"}
-                alt="Hero background"
+                src={
+                  currentVideo.poster || "/placeholder.svg?height=1080&width=1920&query=luxury real estate background"
+                }
+                alt={currentVideo.title}
                 fill
-                className={`object-cover transition-opacity duration-500 ${videoError || !videoLoaded ? "opacity-100" : "opacity-0"}`}
+                className="object-cover"
                 priority
+                sizes="100vw"
               />
+
+              {!videoError && (
+                <video
+                  ref={videoRef}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop={false}
+                  playsInline
+                  preload="metadata"
+                  onError={() => setVideoError(true)}
+                  controls={false}
+                >
+                  <source src={currentVideo.src} type="video/mp4" />
+                </video>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
 
+      {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-black/40" />
 
+      {/* Content */}
       <div className="relative z-10 flex items-center justify-center h-full">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
           <AnimatePresence mode="wait">
@@ -308,11 +232,11 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
               exit={{ opacity: 0, y: -50 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h1 className="font-playfair text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+              <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
                 {currentVideo.title}
               </h1>
 
-              <p className="text-xl md:text-2xl lg:text-3xl mb-12 max-w-3xl mx-auto leading-relaxed text-white/90">
+              <p className="text-lg md:text-xl lg:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed text-white/90">
                 {currentVideo.subtitle}
               </p>
             </motion.div>
@@ -325,28 +249,33 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
             transition={{ duration: 1, delay: 0.9 }}
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                size="lg"
-                className="bg-luxury-gold text-luxury-navy hover:bg-luxury-gold/90 text-lg px-10 py-6 font-semibold"
-              >
-                {primaryCTA.text}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <Link href={primaryCTA.href}>
+                <Button
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-10 py-6 font-semibold"
+                >
+                  {primaryCTA.text}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-white text-white hover:bg-white hover:text-luxury-navy text-lg px-10 py-6 bg-transparent font-semibold"
-              >
-                {secondaryCTA.text}
-              </Button>
+              <Link href={secondaryCTA.href}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-white text-white hover:bg-white hover:text-foreground text-lg px-10 py-6 bg-transparent font-semibold"
+                >
+                  {secondaryCTA.text}
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>
       </div>
 
+      {/* Navigation Controls */}
       <div className="absolute inset-y-0 left-4 flex items-center z-20">
         <motion.button
           onClick={prevVideo}
@@ -371,13 +300,14 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
         </motion.button>
       </div>
 
+      {/* Video Indicators */}
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
         {videos.map((_, index) => (
           <motion.button
             key={index}
             onClick={() => goToVideo(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentVideoIndex ? "bg-luxury-gold scale-125" : "bg-white/50 hover:bg-white/70"
+              index === currentVideoIndex ? "bg-primary scale-125" : "bg-white/50 hover:bg-white/70"
             }`}
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
@@ -386,7 +316,8 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
         ))}
       </div>
 
-      {showVideo && videoLoaded && (
+      {/* Play/Pause Button - only show when video is available */}
+      {!videoError && (
         <motion.button
           onClick={togglePlayPause}
           className="absolute bottom-6 right-6 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors z-20"
@@ -400,13 +331,16 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
         </motion.button>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30 z-20">
-        <motion.div
-          className="h-full bg-luxury-gold"
-          style={{ width: `${videoProgress}%` }}
-          transition={{ duration: 0.1, ease: "linear" }}
-        />
-      </div>
+      {/* Progress Bar - only show when video is playing */}
+      {!videoError && isPlaying && (
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30 z-20">
+          <motion.div
+            className="h-full bg-primary"
+            style={{ width: `${videoProgress}%` }}
+            transition={{ duration: 0.1, ease: "linear" }}
+          />
+        </div>
+      )}
     </section>
   )
 }

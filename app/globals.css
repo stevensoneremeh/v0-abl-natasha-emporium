@@ -1,16 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
-  /* Light theme - Luxury gold and slate palette based on design brief */
+  /* Light theme - Luxury gold and emerald palette with hex values */
   --background: oklch(1 0 0); /* Pure white background */
-  --foreground: oklch(0.145 0 0); /* Slate gray text */
-  --card: oklch(1 0 0); /* Light gray cards */
-  --card-foreground: oklch(0.145 0 0); /* Black card text */
+  --foreground: oklch(0.145 0 0); /* Dark text */
+  --card: oklch(1 0 0); /* White cards */
+  --card-foreground: oklch(0.145 0 0); /* Dark card text */
   --popover: oklch(1 0 0); /* White popover */
-  --popover-foreground: oklch(0.145 0 0); /* Black popover text */
+  --popover-foreground: oklch(0.145 0 0); /* Dark popover text */
   --primary: oklch(0.205 0 0); /* Luxury gold primary */
   --primary-foreground: oklch(0.985 0 0); /* White on gold */
   --secondary: oklch(0.97 0 0); /* Emerald green secondary */
@@ -19,29 +17,29 @@
   --muted-foreground: oklch(0.556 0 0); /* Slate gray muted text */
   --accent: oklch(0.97 0 0); /* Emerald green accent */
   --accent-foreground: oklch(0.205 0 0); /* White on emerald */
-  --destructive: oklch(0.577 0.245 27.325); /* Soft red for alerts */
+  --destructive: oklch(0.577 0.245 27.325); /* Red for alerts */
   --destructive-foreground: oklch(0.577 0.245 27.325); /* White on red */
   --border: oklch(0.922 0 0); /* Light gray border */
   --input: oklch(0.922 0 0); /* White input background */
-  --ring: oklch(0.708 0 0); /* Subtle ring */
+  --ring: oklch(0.708 0 0); /* Gold ring */
   --chart-1: oklch(0.646 0.222 41.116); /* Gold */
   --chart-2: oklch(0.6 0.118 184.704); /* Emerald Green */
   --chart-3: oklch(0.398 0.07 227.392); /* Slate Gray */
   --chart-4: oklch(0.828 0.189 84.429); /* Light Gray */
   --chart-5: oklch(0.769 0.188 70.08); /* White */
   --radius: 0.625rem; /* Rounded corners for buttons and cards */
-  --sidebar: oklch(0.985 0 0); /* White sidebar */
-  --sidebar-foreground: oklch(0.145 0 0); /* Black sidebar text */
-  --sidebar-primary: oklch(0.205 0 0); /* Gold sidebar primary */
-  --sidebar-primary-foreground: oklch(0.985 0 0); /* White on gold */
-  --sidebar-accent: oklch(0.97 0 0); /* Emerald sidebar accent */
-  --sidebar-accent-foreground: oklch(0.205 0 0); /* White on emerald */
-  --sidebar-border: oklch(0.922 0 0); /* Light gray sidebar border */
-  --sidebar-ring: oklch(0.708 0 0); /* Subtle sidebar ring */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  /* Dark theme with luxury gold and emerald accents on dark background */
+  /* Dark theme with luxury gold and emerald accents */
   --background: oklch(0.145 0 0); /* Deep dark background */
   --foreground: oklch(0.985 0 0); /* Light text */
   --card: oklch(0.145 0 0); /* Dark cards */
@@ -51,11 +49,11 @@
   --primary: oklch(0.985 0 0); /* Luxury gold primary */
   --primary-foreground: oklch(0.205 0 0); /* Dark on gold */
   --secondary: oklch(0.269 0 0); /* Emerald green secondary */
-  --secondary-foreground: oklch(0.985 0 0); /* Dark on emerald */
+  --secondary-foreground: oklch(0.985 0 0); /* White on emerald */
   --muted: oklch(0.269 0 0); /* Dark muted */
   --muted-foreground: oklch(0.708 0 0); /* Gray muted text */
   --accent: oklch(0.269 0 0); /* Emerald green accent */
-  --accent-foreground: oklch(0.985 0 0); /* Light on emerald */
+  --accent-foreground: oklch(0.985 0 0); /* White on emerald */
   --destructive: oklch(0.396 0.141 25.723); /* Red for alerts */
   --destructive-foreground: oklch(0.637 0.237 25.331); /* White on red */
   --border: oklch(0.269 0 0); /* Dark border */
@@ -64,20 +62,21 @@
   --chart-1: oklch(0.488 0.243 264.376); /* Gold */
   --chart-2: oklch(0.696 0.17 162.48); /* Emerald Green */
   --chart-3: oklch(0.769 0.188 70.08); /* Slate Gray */
-  --chart-4: oklch(0.627 0.265 303.9); /* Light Gray */
-  --chart-5: oklch(0.645 0.246 16.439); /* White */
-  --sidebar: oklch(0.205 0 0); /* Dark sidebar */
-  --sidebar-foreground: oklch(0.985 0 0); /* Light sidebar text */
-  --sidebar-primary: oklch(0.488 0.243 264.376); /* Gold sidebar primary */
-  --sidebar-primary-foreground: oklch(0.985 0 0); /* Dark on gold */
-  --sidebar-accent: oklch(0.269 0 0); /* Dark sidebar accent */
-  --sidebar-accent-foreground: oklch(0.985 0 0); /* Light on dark */
-  --sidebar-border: oklch(0.269 0 0); /* Dark sidebar border */
-  --sidebar-ring: oklch(0.439 0 0); /* Gold sidebar ring */
+  --chart-4: oklch(0.627 0.265 303.9); /* Dark Gray */
+  --chart-5: oklch(0.645 0.246 16.439); /* Medium Gray */
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
 }
 
 @theme inline {
-  /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-playfair);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -121,24 +120,18 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
-}
 
-/* Enhanced typography hierarchy for luxury design */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-serif text-balance;
-}
-
-p,
-span,
-div {
-  @apply text-pretty;
+  /* Enhanced typography hierarchy for luxury design */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
+  }
 }
 
 /* Smooth transitions for theme switching */
@@ -154,18 +147,18 @@ html:not(.dark) {
   color-scheme: light;
 }
 
-/* Enhanced luxury utility classes with new design system */
+/* Enhanced luxury utility classes with proper color values */
 @layer utilities {
   .luxury-gradient {
     background: linear-gradient(135deg, oklch(0.205 0 0) 0%, oklch(0.97 0 0) 100%);
   }
 
   .luxury-gradient-gold {
-    background: linear-gradient(135deg, oklch(0.205 0 0) 0%, oklch(0.97 0 0) 100%);
+    background: linear-gradient(135deg, oklch(0.205 0 0) 0%, oklch(0.985 0 0) 100%);
   }
 
   .luxury-gradient-emerald {
-    background: linear-gradient(135deg, oklch(0.97 0 0) 0%, oklch(0.269 0 0) 100%);
+    background: linear-gradient(135deg, oklch(0.97 0 0) 0%, oklch(0.97 0 0) 100%);
   }
 
   .glass-effect {
@@ -186,9 +179,8 @@ html:not(.dark) {
     background-clip: text;
   }
 
-  /* Fixed luxury-border to use proper border color variable */
   .luxury-border {
-    border: 1px solid rgb(from var(--color-primary) r g b / 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
   }
 
   .luxury-hover {
@@ -202,7 +194,6 @@ html:not(.dark) {
 
   /* Enhanced card styles */
   .card-luxury {
-    /* Replaced luxury-border with standard border classes */
     @apply bg-card border border-primary/30 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg;
   }
 
@@ -217,15 +208,6 @@ html:not(.dark) {
 
   .btn-luxury:hover {
     @apply shadow-2xl transform scale-105;
-  }
-
-  /* Text balance for better typography */
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .text-pretty {
-    text-wrap: pretty;
   }
 
   /* Luxury spacing utilities */

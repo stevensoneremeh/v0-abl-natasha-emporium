@@ -10,7 +10,6 @@ export const isSupabaseConfigured =
 // Create browser client for client components
 export const createClient = () => {
   if (!isSupabaseConfigured) {
-    console.warn("Supabase environment variables are not set. Using dummy client.")
     return {
       from: () => ({
         select: () => ({
@@ -26,10 +25,16 @@ export const createClient = () => {
       auth: {
         getSession: () => Promise.resolve({ data: { session: null }, error: null }),
         getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-        signInWithPassword: () => Promise.resolve({ data: null, error: null }),
-        signUp: () => Promise.resolve({ data: null, error: null }),
+        signInWithPassword: () => Promise.resolve({ data: { user: null, session: null }, error: null }),
+        signUp: () => Promise.resolve({ data: { user: null, session: null }, error: null }),
         signOut: () => Promise.resolve({ error: null }),
-        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        onAuthStateChange: () => ({
+          data: {
+            subscription: {
+              unsubscribe: () => {},
+            },
+          },
+        }),
       },
       storage: {
         from: () => ({
@@ -40,7 +45,12 @@ export const createClient = () => {
     }
   }
 
-  return createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+  try {
+    return createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+  } catch (error) {
+    console.warn("Failed to create Supabase client, using dummy client:", error)
+    return createClient() // Return dummy client on error
+  }
 }
 
 // Create a singleton instance for client components
