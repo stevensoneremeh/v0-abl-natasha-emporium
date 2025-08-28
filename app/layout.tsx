@@ -5,32 +5,11 @@ import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
 import { WishlistProvider } from "@/contexts/wishlist-context"
 import { AuthProvider } from "@/lib/auth-context"
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Suspense } from "react"
 import { safeMetadataBase } from "@/lib/utils/metadata"
-
-let Analytics: any = () => null
-try {
-  const analyticsModule = require("@vercel/analytics/react")
-  Analytics = analyticsModule.Analytics
-} catch (error) {
-  console.warn("@vercel/analytics package not found, skipping analytics")
-}
-
-let ThemeProvider: any = ({ children }: { children: React.ReactNode }) => <>{children}</>
-try {
-  const nextThemes = require("next-themes")
-  ThemeProvider = nextThemes.ThemeProvider
-} catch (error) {
-  console.warn("next-themes package not found, using fallback provider")
-}
-
-let SpeedInsights: any = null
-try {
-  const speedInsightsModule = require("@vercel/speed-insights/next")
-  SpeedInsights = speedInsightsModule.SpeedInsights
-} catch (error) {
-  console.warn("@vercel/speed-insights package not found, skipping speed insights")
-}
+import { ThemeProvider } from "next-themes"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -85,7 +64,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ABL NATASHA ENTERPRISES - Luxury Lifestyle Collection",
-    description: "Discover luxury real estate, premium wines, exotic cars, premium hair products, and fragrances.",
+    description:
+      "Discover luxury real estate, premium wines, exotic cars, premium hair products, and exclusive fragrances.",
     images: ["/og-image.jpg"],
     creator: "@ablnatasha",
   },
@@ -154,7 +134,7 @@ export default function RootLayout({
                 <WishlistProvider>
                   {children}
                   <Analytics />
-                  {SpeedInsights && <SpeedInsights />}
+                  <SpeedInsights />
                 </WishlistProvider>
               </CartProvider>
             </AuthProvider>
