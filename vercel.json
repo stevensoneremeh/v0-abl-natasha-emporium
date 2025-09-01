@@ -45,8 +45,8 @@
   },
   "crons": [
     {
-      "path": "/api/health",
-      "schedule": "0 */6 * * *"
+      "path": "/api/task",
+      "schedule": "0 1 * * *"
     }
   ]
 }
