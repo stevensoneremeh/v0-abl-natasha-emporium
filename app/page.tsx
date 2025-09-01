@@ -32,43 +32,43 @@ import { Heart } from "lucide-react"
 
 const heroVideos = [
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/uSlp-xr3zBP8lXR1SMwW6h/public/video2.mp4",
+    src: "/luxury-real-estate-video.png",
     poster: "/luxury-real-estate-exterior.png",
     title: "Luxury Real Estate",
     subtitle: "Discover premium properties and exclusive investment opportunities in prime locations",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/9ZegVuzzfVAextXiyyFx2w/public/video3.mp4",
+    src: "/modern-interior-video.png",
     poster: "/modern-interior.png",
     title: "Modern Interiors",
     subtitle: "Experience sophisticated design and contemporary luxury living spaces",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/tKGZJFOS96klOq8lOmq4Uo/public/video4.mp4",
+    src: "/luxury-amenities-video.png",
     poster: "/luxury-amenities-pool.png",
     title: "Premium Amenities",
     subtitle: "Indulge in world-class facilities and exclusive luxury amenities",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/ItXhS5i8c4HH1Qg67JVrEy/public/video5.mp4",
+    src: "/business-office-video.png",
     poster: "/business-office-space.png",
     title: "Executive Spaces",
     subtitle: "Professional environments designed for success and productivity",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/A9TGfgDzmNJeLHdjY9YBK_/public/video6.mp4",
+    src: "/luxury-resort-video.png",
     poster: "/luxury-resort-suite.png",
     title: "Resort Living",
     subtitle: "Experience the ultimate in luxury hospitality and comfort",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/PnAbaYvNZkxh5ZPXHTrYao/public/video7.mp4",
+    src: "/investment-video.png",
     poster: "/investment-opportunity.png",
     title: "Investment Opportunities",
     subtitle: "Secure your future with premium real estate investments",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/7Lc-Lh0f0H__2NeVCpJlZ-/public/video8.mp4",
+    src: "/luxury-lifestyle-video.png",
     poster: "/luxury-lifestyle.png",
     title: "Luxury Lifestyle",
     subtitle: "Embrace the finest things in life with our exclusive collection",
@@ -134,7 +134,7 @@ const featuredProducts = [
     name: "Luxury Penthouse - Victoria Island",
     price: "₦850,000,000",
     originalPrice: null,
-    image: "/luxury-penthouse-victoria-island.png",
+    image: "/placeholder.svg?height=400&width=300",
     category: "Real Estate",
     rating: 5,
     reviews: 12,
@@ -147,7 +147,7 @@ const featuredProducts = [
     name: "Dom Pérignon Vintage 2013",
     price: "₦450,000",
     originalPrice: "₦520,000",
-    image: "/dom-perignon-vintage.png",
+    image: "/placeholder.svg?height=400&width=300",
     category: "Wines",
     rating: 5,
     reviews: 28,
@@ -160,7 +160,7 @@ const featuredProducts = [
     name: "Mercedes-Benz S-Class 2024",
     price: "₦95,000,000",
     originalPrice: null,
-    image: "/mercedes-s-class.png",
+    image: "/placeholder.svg?height=400&width=300",
     category: "Cars",
     rating: 5,
     reviews: 8,
@@ -173,7 +173,7 @@ const featuredProducts = [
     name: "Tom Ford Black Orchid",
     price: "₦185,000",
     originalPrice: "₦210,000",
-    image: "/black-orchid-perfume.png",
+    image: "/placeholder.svg?height=400&width=300",
     category: "Perfumes",
     rating: 5,
     reviews: 45,
@@ -191,7 +191,7 @@ const testimonials = [
     content:
       "ABL Natasha Enterprises helped me find the perfect luxury penthouse. Their attention to detail and premium service is unmatched.",
     rating: 5,
-    image: "/professional-man-headshot.png",
+    image: "/placeholder.svg?height=80&width=80",
   },
   {
     id: 2,
@@ -200,7 +200,7 @@ const testimonials = [
     content:
       "The vintage wine collection here is extraordinary. I've found rare bottles that I couldn't locate anywhere else.",
     rating: 5,
-    image: "/professional-woman-headshot.png",
+    image: "/placeholder.svg?height=80&width=80",
   },
   {
     id: 3,
@@ -208,7 +208,7 @@ const testimonials = [
     role: "Luxury Car Enthusiast",
     content: "Purchased my dream Mercedes-Benz through them. The entire process was seamless and professional.",
     rating: 5,
-    image: "/luxury-man-headshot.png",
+    image: "/placeholder.svg?height=80&width=80",
   },
 ]
 
@@ -669,7 +669,7 @@ export default function HomePage() {
         </section>
       </LazyLoadWrapper>
 
-      {/* ... existing testimonials section with enhanced styling ... */}
+      {/* Testimonials Section */}
       <LazyLoadWrapper>
         <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-white to-slate-50 relative">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
