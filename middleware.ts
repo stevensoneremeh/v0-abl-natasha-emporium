@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+/* Added runtime configuration for Edge compatibility */
+export const runtime = "nodejs"
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -36,10 +39,13 @@ export async function middleware(request: NextRequest) {
 
     let user = null
     try {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser()
-      user = authUser
+      /* Added null check for getUser method */
+      if (supabase?.auth?.getUser) {
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser()
+        user = authUser
+      }
     } catch (error) {
       console.warn("Error getting user in middleware:", error)
       return supabaseResponse
