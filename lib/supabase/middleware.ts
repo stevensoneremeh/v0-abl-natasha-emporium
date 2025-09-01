@@ -6,12 +6,16 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
-  // With Fluid compute, don't put this client in a global environment
-  // variable. Always create a new one on each request.
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("[v0] Missing Supabase environment variables in middleware")
+    return supabaseResponse
+  }
+
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll()
@@ -24,41 +28,34 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options))
         },
       },
-    },
-  )
+    })
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  // IMPORTANT: If you remove getUser() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    // Protect admin routes
+    if (request.nextUrl.pathname.startsWith("/admin")) {
+      if (!user) {
+        const redirectUrl = request.nextUrl.clone()
+        redirectUrl.pathname = "/auth/login"
+        redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname)
+        return NextResponse.redirect(redirectUrl)
+      }
 
-  // Protect admin routes
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    if (!user) {
-      // Redirect to login if not authenticated
-      const redirectUrl = request.nextUrl.clone()
-      redirectUrl.pathname = "/auth/login"
-      redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname)
-      return NextResponse.redirect(redirectUrl)
+      const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [
+        "talktostevenson@gmail.com",
+      ]
+
+      if (!adminEmails.includes(user.email || "")) {
+        const redirectUrl = request.nextUrl.clone()
+        redirectUrl.pathname = "/unauthorized"
+        return NextResponse.redirect(redirectUrl)
+      }
     }
-
-    const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [
-      "talktostevenson@gmail.com",
-    ]
-
-    if (!adminEmails.includes(user.email || "")) {
-      // Redirect to unauthorized page
-      const redirectUrl = request.nextUrl.clone()
-      redirectUrl.pathname = "/unauthorized"
-      return NextResponse.redirect(redirectUrl)
-    }
+  } catch (error) {
+    console.error("[v0] Middleware error:", error)
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
   return supabaseResponse
 }

@@ -2,16 +2,10 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Playfair_Display, DM_Sans } from "next/font/google"
 import "./globals.css"
-import { CartProvider } from "@/contexts/cart-context"
-import { WishlistProvider } from "@/contexts/wishlist-context"
-import { AuthProvider } from "@/lib/auth-context"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Suspense } from "react"
-import { safeMetadataBase } from "@/lib/utils/metadata"
 import { ThemeProvider } from "next-themes"
-import { ErrorBoundary } from "@/components/error-boundary"
-import { AnalyticsProvider } from "@/components/analytics-provider"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -41,10 +35,6 @@ export const metadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
-  },
-  metadataBase: safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL),
-  alternates: {
-    canonical: "/",
   },
   openGraph: {
     title: "ABL NATASHA ENTERPRISES - Luxury Lifestyle Collection",
@@ -82,9 +72,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // verification: {
-  //   google: "your-google-verification-code",
-  // },
 }
 
 export default function RootLayout({
@@ -102,8 +89,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "ABL NATASHA ENTERPRISES",
-              url: safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL).toString(),
-              logo: `${safeMetadataBase(process.env.NEXT_PUBLIC_BASE_URL).toString()}/og-image.jpg`,
+              url: typeof window !== "undefined" ? window.location.origin : "https://abl-natasha-emporium.vercel.app",
+              logo: `${typeof window !== "undefined" ? window.location.origin : "https://abl-natasha-emporium.vercel.app"}/og-image.jpg`,
               description:
                 "Luxury lifestyle collection featuring real estate, wines, cars, hair products, and fragrances.",
               sameAs: [
@@ -146,27 +133,12 @@ export default function RootLayout({
         )}
       </head>
       <body className="font-sans bg-background text-foreground min-h-screen transition-colors duration-300">
-        <Suspense fallback={null}>
-          <ErrorBoundary>
-            <AnalyticsProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem={false}
-                disableTransitionOnChange={false}
-              >
-                <AuthProvider>
-                  <CartProvider>
-                    <WishlistProvider>
-                      {children}
-                      <Analytics />
-                      <SpeedInsights />
-                    </WishlistProvider>
-                  </CartProvider>
-                </AuthProvider>
-              </ThemeProvider>
-            </AnalyticsProvider>
-          </ErrorBoundary>
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange={false}>
+            {children}
+            <Analytics />
+            <SpeedInsights />
+          </ThemeProvider>
         </Suspense>
       </body>
     </html>
