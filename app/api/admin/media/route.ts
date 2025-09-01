@@ -35,7 +35,7 @@ export async function GET() {
 
     try {
       // Fetch media files from storage
-      const { data: files, error } = await supabase.storage.from("media").list("", {
+      const { data: files, error } = await supabase.storage.from("abl-natasha-assets").list("", {
         limit: 100,
         offset: 0,
         sortBy: { column: "created_at", order: "desc" },
@@ -51,7 +51,7 @@ export async function GET() {
         files?.map((file) => {
           const {
             data: { publicUrl },
-          } = supabase.storage.from("media").getPublicUrl(file.name)
+          } = supabase.storage.from("abl-natasha-assets").getPublicUrl(file.name)
 
           const category = file.metadata?.mimetype?.startsWith("image/")
             ? "image"

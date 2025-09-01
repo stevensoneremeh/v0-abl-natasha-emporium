@@ -57,35 +57,8 @@ export async function updateSession(request: NextRequest) {
       redirectUrl.pathname = "/unauthorized"
       return NextResponse.redirect(redirectUrl)
     }
-
-    try {
-      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
-
-      if (!profile || profile.role !== "admin") {
-        await supabase.from("profiles").upsert({
-          id: user.id,
-          role: "admin",
-          updated_at: new Date().toISOString(),
-        })
-      }
-    } catch (error) {
-      console.warn("Error handling admin profile in middleware:", error)
-      // Continue without blocking the request
-    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
   return supabaseResponse
 }
