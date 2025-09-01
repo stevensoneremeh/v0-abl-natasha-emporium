@@ -170,7 +170,7 @@ export function EnhancedNavigation() {
 
             {/* Wishlist */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Link href="/wishlist">
+              <Link href="/dashboard/wishlist">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -225,7 +225,7 @@ export function EnhancedNavigation() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/wishlist" className="cursor-pointer">
+                      <Link href="/dashboard/wishlist" className="cursor-pointer">
                         <Heart className="h-4 w-4 mr-2" />
                         Wishlist
                       </Link>
@@ -320,7 +320,7 @@ export function EnhancedNavigation() {
                       <Search className="h-4 w-4 mr-2" />
                       Search
                     </Button>
-                    <Link href="/wishlist">
+                    <Link href="/dashboard/wishlist">
                       <Button variant="ghost" size="sm" className="hover:bg-primary/10 rounded-xl">
                         <Heart className="h-4 w-4" />
                       </Button>
@@ -343,7 +343,7 @@ export function EnhancedNavigation() {
                           My Orders
                         </Button>
                       </Link>
-                      <Link href="/wishlist" onClick={() => setIsOpen(false)}>
+                      <Link href="/dashboard/wishlist" onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start hover:bg-primary/10 rounded-xl">
                           <Heart className="h-4 w-4 mr-2" />
                           Wishlist
