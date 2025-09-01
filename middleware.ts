@@ -10,91 +10,83 @@ export async function middleware(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("[v0] Missing Supabase environment variables in middleware")
+    console.warn("Missing Supabase environment variables in middleware")
     return supabaseResponse
   }
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll()
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-        supabaseResponse = NextResponse.next({
-          request,
-        })
-        cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options))
-      },
-    },
-  })
-
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  let user = null
   try {
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
-    user = authUser
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          supabaseResponse = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options))
+        },
+      },
+    })
+
+    // IMPORTANT: Avoid writing any logic between createServerClient and
+    // supabase.auth.getUser(). A simple mistake could make it very hard to debug
+    // issues with users being randomly logged out.
+
+    let user = null
+    try {
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser()
+      user = authUser
+    } catch (error) {
+      console.warn("Error getting user in middleware:", error)
+      return supabaseResponse
+    }
+
+    // Protect admin routes
+    if (request.nextUrl.pathname.startsWith("/admin")) {
+      if (!user) {
+        // Redirect to login if not authenticated
+        const redirectUrl = request.nextUrl.clone()
+        redirectUrl.pathname = "/auth/login"
+        redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname)
+        return NextResponse.redirect(redirectUrl)
+      }
+
+      const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [
+        "talktostevenson@gmail.com",
+      ]
+
+      if (!adminEmails.includes(user.email || "")) {
+        // Redirect to unauthorized page
+        const redirectUrl = request.nextUrl.clone()
+        redirectUrl.pathname = "/unauthorized"
+        return NextResponse.redirect(redirectUrl)
+      }
+
+      try {
+        const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+
+        if (!profile || profile.role !== "admin") {
+          await supabase.from("profiles").upsert({
+            id: user.id,
+            role: "admin",
+            updated_at: new Date().toISOString(),
+          })
+        }
+      } catch (error) {
+        console.warn("Error handling admin profile in middleware:", error)
+        // Continue without blocking the request
+      }
+    }
+
+    return supabaseResponse
   } catch (error) {
-    console.error("[v0] Error getting user in middleware:", error)
+    console.warn("Error in middleware:", error)
     return supabaseResponse
   }
-
-  // Protect admin routes
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    if (!user) {
-      // Redirect to login if not authenticated
-      const redirectUrl = request.nextUrl.clone()
-      redirectUrl.pathname = "/auth/login"
-      redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname)
-      return NextResponse.redirect(redirectUrl)
-    }
-
-    const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [
-      "talktostevenson@gmail.com",
-    ]
-
-    if (!adminEmails.includes(user.email || "")) {
-      // Redirect to unauthorized page
-      const redirectUrl = request.nextUrl.clone()
-      redirectUrl.pathname = "/unauthorized"
-      return NextResponse.redirect(redirectUrl)
-    }
-
-    try {
-      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
-
-      if (!profile || profile.role !== "admin") {
-        await supabase.from("profiles").upsert({
-          id: user.id,
-          role: "admin",
-          updated_at: new Date().toISOString(),
-        })
-      }
-    } catch (error) {
-      console.error("[v0] Error handling admin profile in middleware:", error)
-      // Continue without blocking the request
-    }
-  }
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
-  return supabaseResponse
 }
 
 export const config = {

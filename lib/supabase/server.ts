@@ -48,10 +48,17 @@ const createMockQueryBuilder = () => {
     explain: () => Promise.resolve({ data: "", error: null }),
     rollback: () => queryBuilder,
     returns: () => queryBuilder,
-    then: (onfulfilled?: any, onrejected?: any) => mockResult.then(onfulfilled, onrejected),
+    then: (onfulfilled?: any, onrejected?: any) => {
+      return mockResult.then(onfulfilled, onrejected)
+    },
     catch: (onrejected?: any) => mockResult.catch(onrejected),
     finally: (onfinally?: any) => mockResult.finally(onfinally),
   }
+
+  Object.defineProperty(queryBuilder, Symbol.toStringTag, {
+    value: "Promise",
+    configurable: true,
+  })
 
   return queryBuilder
 }
