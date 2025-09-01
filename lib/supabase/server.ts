@@ -27,6 +27,7 @@ export const createClient = cache(() => {
         delete: () => Promise.resolve({ data: null, error: null }),
       }),
       auth: {
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
         getUser: () => Promise.resolve({ data: { user: null }, error: null }),
         signInWithPassword: () => Promise.resolve({ data: null, error: null }),
         signUp: () => Promise.resolve({ data: null, error: null }),

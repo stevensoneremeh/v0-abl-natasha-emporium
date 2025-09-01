@@ -18,6 +18,7 @@ import {
   Bell,
   LogOut,
   Upload,
+  CreditCard,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -28,6 +29,7 @@ const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Products", href: "/admin/products", icon: Package },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart, badge: 3 },
+  { name: "Transactions", href: "/admin/transactions", icon: CreditCard },
   { name: "Bookings", href: "/admin/bookings", icon: Calendar, badge: 2 },
   { name: "Categories", href: "/admin/categories", icon: Tag },
   { name: "Real Estate", href: "/admin/real-estate", icon: Home },
