@@ -6,13 +6,37 @@ import { Button } from "@/components/ui/button"
 import { User, ShoppingCart, Heart, Settings } from "lucide-react"
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 async function getUserStats() {
   try {
     const supabase = await createClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    if (!supabase || !supabase.auth || typeof supabase.auth.getUser !== "function") {
+      console.error("Supabase client not properly initialized")
+      return {
+        user: null,
+        totalOrders: 0,
+        wishlistItems: 0,
+        recentOrders: [],
+      }
+    }
+
+    let user = null
+    try {
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser()
+      user = authUser
+    } catch (authError) {
+      console.error("Error getting user:", authError)
+      return {
+        user: null,
+        totalOrders: 0,
+        wishlistItems: 0,
+        recentOrders: [],
+      }
+    }
 
     if (!user) {
       redirect("/auth/login")
