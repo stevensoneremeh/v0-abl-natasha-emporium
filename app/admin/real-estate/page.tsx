@@ -39,9 +39,10 @@ async function checkAdminAccess() {
   try {
     const supabase = createServerClient()
 
-    if (!supabase || !supabase.auth) {
+    if (!supabase || !supabase.auth || typeof supabase.auth.getUser !== "function") {
       console.error("Supabase client not properly initialized")
       redirect("/auth/login")
+      return null
     }
 
     const {
@@ -50,18 +51,21 @@ async function checkAdminAccess() {
 
     if (!user) {
       redirect("/auth/login")
+      return null
     }
 
     const { data: profile } = await supabase.from("profiles").select("is_admin, role").eq("id", user.id).single()
 
     if (!profile?.is_admin && profile?.role !== "admin") {
       redirect("/unauthorized")
+      return null
     }
 
     return user
   } catch (error) {
     console.error("Error checking admin access:", error)
     redirect("/auth/login")
+    return null
   }
 }
 

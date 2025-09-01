@@ -1,8 +1,25 @@
 import type { Product, Category } from "@/lib/database"
 
+function getBaseUrl() {
+  if (typeof window !== "undefined") {
+    // Browser should use relative URL
+    return ""
+  }
+  if (process.env.VERCEL_URL) {
+    // Reference for vercel.com
+    return `https://${process.env.VERCEL_URL}`
+  }
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    // Use the configured base URL
+    return process.env.NEXT_PUBLIC_BASE_URL
+  }
+  // Assume localhost
+  return "http://localhost:3000"
+}
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const response = await fetch(`/api/products/${slug}`)
+    const response = await fetch(`${getBaseUrl()}/api/products/${slug}`)
     if (!response.ok) {
       if (response.status === 404) return null
       throw new Error("Failed to fetch product")
@@ -32,7 +49,7 @@ export async function getProductsByCategory(
     if (options.sortOrder) params.append("sortOrder", options.sortOrder)
     if (options.featured !== undefined) params.append("featured", options.featured.toString())
 
-    const response = await fetch(`/api/categories/${categoryId}/products?${params}`)
+    const response = await fetch(`${getBaseUrl()}/api/categories/${categoryId}/products?${params}`)
     if (!response.ok) {
       throw new Error("Failed to fetch products")
     }
@@ -45,7 +62,7 @@ export async function getProductsByCategory(
 
 export async function getCategories(): Promise<Category[]> {
   try {
-    const response = await fetch("/api/categories")
+    const response = await fetch(`${getBaseUrl()}/api/categories`)
     if (!response.ok) {
       throw new Error("Failed to fetch categories")
     }
@@ -58,7 +75,7 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   try {
-    const response = await fetch(`/api/categories/slug/${slug}`)
+    const response = await fetch(`${getBaseUrl()}/api/categories/slug/${slug}`)
     if (!response.ok) {
       if (response.status === 404) return null
       throw new Error("Failed to fetch category")
@@ -72,7 +89,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
   try {
-    const response = await fetch(`/api/products/featured?limit=${limit}`)
+    const response = await fetch(`${getBaseUrl()}/api/products/featured?limit=${limit}`)
     if (!response.ok) {
       throw new Error("Failed to fetch featured products")
     }
@@ -97,7 +114,7 @@ export async function searchProducts(
     if (options.limit) params.append("limit", options.limit.toString())
     if (options.offset) params.append("offset", options.offset.toString())
 
-    const response = await fetch(`/api/products/search?${params}`)
+    const response = await fetch(`${getBaseUrl()}/api/products/search?${params}`)
     if (!response.ok) {
       throw new Error("Failed to search products")
     }
