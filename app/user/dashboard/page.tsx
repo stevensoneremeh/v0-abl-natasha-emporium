@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -7,32 +7,47 @@ import { User, ShoppingCart, Heart, Settings } from "lucide-react"
 import Link from "next/link"
 
 async function getUserStats() {
-  const supabase = createServerClient()
+  try {
+    const supabase = await createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) {
-    redirect("/auth/login")
-  }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  // Get user stats
-  const [{ count: totalOrders }, { count: wishlistItems }, { data: recentOrders }] = await Promise.all([
-    supabase.from("orders").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-    supabase.from("wishlist_items").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-    supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(3),
-  ])
+    if (!user) {
+      redirect("/auth/login")
+    }
 
-  return {
-    user,
-    totalOrders: totalOrders || 0,
-    wishlistItems: wishlistItems || 0,
-    recentOrders: recentOrders || [],
+    // Get user stats with error handling
+    const [{ count: totalOrders }, { count: wishlistItems }, { data: recentOrders }] = await Promise.all([
+      supabase.from("orders").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("wishlist_items").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(3),
+    ])
+
+    return {
+      user,
+      totalOrders: totalOrders || 0,
+      wishlistItems: wishlistItems || 0,
+      recentOrders: recentOrders || [],
+    }
+  } catch (error) {
+    console.error("Error fetching user stats:", error)
+    return {
+      user: null,
+      totalOrders: 0,
+      wishlistItems: 0,
+      recentOrders: [],
+    }
   }
 }
 
 export default async function UserDashboard() {
   const stats = await getUserStats()
+
+  if (!stats.user) {
+    redirect("/auth/login")
+  }
 
   return (
     <div className="space-y-8">
