@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
 export default function Page() {
@@ -17,6 +17,8 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirectTo")
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,7 +27,7 @@ export default function Page() {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
         options: {
@@ -33,7 +35,20 @@ export default function Page() {
         },
       })
       if (error) throw error
-      router.push("/protected")
+
+      if (data.user) {
+        const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [
+          "talktostevenson@gmail.com",
+        ]
+
+        if (adminEmails.includes(data.user.email || "")) {
+          router.push(redirectTo || "/admin/dashboard")
+        } else {
+          router.push(redirectTo || "/dashboard")
+        }
+      } else {
+        router.push("/protected")
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {

@@ -134,21 +134,87 @@
   }
 }
 
-/* Smooth transitions for theme switching */
-html {
-  transition: color-scheme 0.3s ease;
-}
-
-html.dark {
-  color-scheme: dark;
-}
-
-html:not(.dark) {
-  color-scheme: light;
-}
-
-/* Enhanced luxury utility classes with proper color values */
+/* Enhanced mobile responsiveness utilities and safe area support */
+/* Mobile-first responsive utilities */
 @layer utilities {
+  /* Safe area support for modern mobile devices */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Mobile-optimized touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Mobile-friendly text sizes */
+  .text-mobile-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  .text-mobile-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  .text-mobile-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  .text-mobile-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  .text-mobile-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  /* Mobile-optimized spacing */
+  .mobile-container {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .mobile-section {
+    @apply py-8 sm:py-12 lg:py-16;
+  }
+
+  /* Enhanced mobile interactions */
+  .mobile-card {
+    @apply p-4 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  .mobile-button {
+    @apply px-4 py-3 sm:px-6 sm:py-3 rounded-xl font-medium transition-all duration-200 min-h-11 min-w-11;
+  }
+
+  /* Mobile-optimized grid layouts */
+  .mobile-grid-1 {
+    @apply grid grid-cols-1;
+  }
+  .mobile-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2;
+  }
+  .mobile-grid-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  .mobile-grid-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  /* Luxury gradient utilities remain the same */
   .luxury-gradient {
     background: linear-gradient(135deg, oklch(0.205 0 0) 0%, oklch(0.97 0 0) 100%);
   }
@@ -218,6 +284,19 @@ html:not(.dark) {
   .luxury-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
+}
+
+/* Smooth transitions for theme switching */
+html {
+  transition: color-scheme 0.3s ease;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html:not(.dark) {
+  color-scheme: light;
 }
 
 /* Enhanced animations for luxury interactions */
@@ -302,5 +381,44 @@ html:not(.dark) {
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/80;
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Improve touch interactions */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimize text for mobile reading */
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Optimize form inputs for mobile */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .luxury-gradient,
+  .luxury-gradient-gold,
+  .luxury-gradient-emerald {
+    background-attachment: fixed;
   }
 }

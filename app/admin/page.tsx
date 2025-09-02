@@ -9,10 +9,14 @@ import {
   Calendar,
   DollarSign,
   TrendingUp,
+  TrendingDown,
   AlertTriangle,
   Eye,
   Users,
   BarChart3,
+  Plus,
+  ArrowUpRight,
+  Activity,
 } from "lucide-react"
 import { AdminAnalyticsCharts } from "@/components/admin-analytics-charts"
 import Link from "next/link"
@@ -88,7 +92,8 @@ export default function AdminDashboard() {
       value: stats.totalProducts.toLocaleString(),
       icon: Package,
       color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      bgColor: "bg-gradient-to-br from-blue-50 to-blue-100",
+      borderColor: "border-blue-200",
       change: "+12%",
       changeType: "positive" as const,
     },
@@ -96,8 +101,9 @@ export default function AdminDashboard() {
       title: "Total Orders",
       value: stats.totalOrders.toLocaleString(),
       icon: ShoppingCart,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "text-emerald-600",
+      bgColor: "bg-gradient-to-br from-emerald-50 to-emerald-100",
+      borderColor: "border-emerald-200",
       change: "+8%",
       changeType: "positive" as const,
     },
@@ -106,7 +112,8 @@ export default function AdminDashboard() {
       value: stats.totalBookings.toLocaleString(),
       icon: Calendar,
       color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      bgColor: "bg-gradient-to-br from-purple-50 to-purple-100",
+      borderColor: "border-purple-200",
       change: "+15%",
       changeType: "positive" as const,
     },
@@ -114,8 +121,9 @@ export default function AdminDashboard() {
       title: "Total Revenue",
       value: formatCurrency(stats.totalRevenue),
       icon: DollarSign,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-50",
+      color: "text-amber-600",
+      bgColor: "bg-gradient-to-br from-amber-50 to-amber-100",
+      borderColor: "border-amber-200",
       change: "+23%",
       changeType: "positive" as const,
     },
@@ -152,20 +160,24 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold text-luxury-navy font-playfair">Dashboard</h1>
-          <p className="text-luxury-charcoal mt-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 font-serif mb-2">Dashboard</h1>
+          <p className="text-slate-600 text-sm sm:text-base lg:text-lg">
             Welcome back! Here's what's happening with your luxury emporium today.
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-luxury-charcoal">
+        <div className="flex flex-col sm:flex-row lg:items-end gap-2">
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <Activity className="h-4 w-4" />
+            <span>Live Updates</span>
+          </div>
+          <p className="text-sm font-medium text-slate-700">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               year: "numeric",
@@ -173,35 +185,46 @@ export default function AdminDashboard() {
               day: "numeric",
             })}
           </p>
-          <p className="text-xs text-luxury-charcoal/70">Last updated: {new Date().toLocaleTimeString()}</p>
+          <p className="text-xs text-slate-500">Last updated: {new Date().toLocaleTimeString()}</p>
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {statCards.map((stat, index) => {
           const IconComponent = stat.icon
+          const TrendIcon = stat.changeType === "positive" ? TrendingUp : TrendingDown
           return (
             <motion.div
               key={stat.title}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
             >
-              <Card className="card-luxury hover:shadow-lg transition-shadow duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-luxury-charcoal">{stat.title}</p>
-                      <p className="text-2xl font-bold text-luxury-navy">{stat.value}</p>
-                      <div className="flex items-center mt-2">
-                        <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
-                        <span className="text-sm font-medium text-green-600">{stat.change}</span>
-                        <span className="text-xs text-luxury-charcoal ml-1">vs last month</span>
-                      </div>
+              <Card
+                className={`relative overflow-hidden border-2 ${stat.borderColor} hover:shadow-xl transition-all duration-300 bg-white`}
+              >
+                <div className={`absolute inset-0 ${stat.bgColor} opacity-50`}></div>
+                <CardContent className="p-4 sm:p-6 relative">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <div className={`p-2 sm:p-3 rounded-xl ${stat.bgColor} border ${stat.borderColor}`}>
+                      <IconComponent className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.color}`} />
                     </div>
-                    <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                      <IconComponent className={`h-6 w-6 ${stat.color}`} />
+                    <div className="flex items-center gap-1 text-xs sm:text-sm">
+                      <TrendIcon
+                        className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.changeType === "positive" ? "text-emerald-600" : "text-red-600"}`}
+                      />
+                      <span
+                        className={`font-semibold ${stat.changeType === "positive" ? "text-emerald-600" : "text-red-600"}`}
+                      >
+                        {stat.change}
+                      </span>
                     </div>
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium text-slate-600 mb-1">{stat.title}</p>
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">{stat.value}</p>
+                    <p className="text-xs text-slate-500 mt-1">vs last month</p>
                   </div>
                 </CardContent>
               </Card>
@@ -211,21 +234,48 @@ export default function AdminDashboard() {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-luxury-navy font-playfair">Analytics Overview</h2>
-          <Button variant="outline" asChild>
-            <Link href="/admin/analytics">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              View Full Analytics
-            </Link>
-          </Button>
-        </div>
-        <AdminAnalyticsCharts />
+        <Card className="border-2 border-slate-200 shadow-lg bg-white">
+          <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 font-serif flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  Analytics Overview
+                </CardTitle>
+                <p className="text-slate-600 mt-1 text-sm sm:text-base">
+                  Real-time business insights and performance metrics
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                asChild
+                className="hover:bg-primary hover:text-white transition-colors w-full sm:w-auto bg-transparent"
+              >
+                <Link href="/admin/analytics">
+                  <span className="sm:hidden">Analytics</span>
+                  <span className="hidden sm:inline">View Full Analytics</span>
+                  <ArrowUpRight className="h-4 w-4 ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6">
+            <AdminAnalyticsCharts />
+          </CardContent>
+        </Card>
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-        <h2 className="text-2xl font-bold text-luxury-navy font-playfair mb-6">Action Required</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-serif flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500" />
+            Action Required
+          </h2>
+          <Badge className="bg-red-100 text-red-800 px-3 py-1 w-fit">
+            {alertCards.reduce((sum, card) => sum + card.value, 0)} Items
+          </Badge>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {alertCards.map((alert, index) => {
             const IconComponent = alert.icon
             return (
@@ -234,35 +284,38 @@ export default function AdminDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 + index * 0.1 }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
               >
                 <Card
-                  className={`card-luxury hover:shadow-lg transition-all duration-300 ${
-                    alert.priority === "high" ? "ring-2 ring-red-200" : ""
+                  className={`relative overflow-hidden border-2 hover:shadow-xl transition-all duration-300 bg-white ${
+                    alert.priority === "high" ? "border-red-200 ring-2 ring-red-100" : "border-slate-200"
                   }`}
                 >
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="text-sm font-medium text-luxury-charcoal">{alert.title}</p>
-                          {alert.priority === "high" && (
-                            <Badge className="bg-red-100 text-red-800 text-xs">Urgent</Badge>
-                          )}
-                        </div>
-                        <p className="text-2xl font-bold text-luxury-navy">{alert.value}</p>
+                  <div className={`absolute inset-0 ${alert.bgColor} opacity-30`}></div>
+                  <CardContent className="p-4 sm:p-6 relative">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                      <div className={`p-2 sm:p-3 rounded-xl ${alert.bgColor} border-2 border-white shadow-sm`}>
+                        <IconComponent className={`h-5 w-5 sm:h-6 sm:w-6 ${alert.color}`} />
                       </div>
-                      <div className={`p-3 rounded-full ${alert.bgColor}`}>
-                        <IconComponent className={`h-6 w-6 ${alert.color}`} />
-                      </div>
+                      {alert.priority === "high" && (
+                        <Badge className="bg-red-500 text-white text-xs animate-pulse">Urgent</Badge>
+                      )}
                     </div>
-                    <div className="mt-4">
-                      <Button variant="outline" size="sm" asChild className="w-full bg-transparent">
-                        <Link href={alert.href}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View All
-                        </Link>
-                      </Button>
+                    <div className="mb-3 sm:mb-4">
+                      <p className="text-xs sm:text-sm font-medium text-slate-600 mb-1">{alert.title}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-slate-900">{alert.value}</p>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="w-full hover:bg-primary hover:text-white transition-colors bg-transparent"
+                    >
+                      <Link href={alert.href}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View All
+                      </Link>
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -272,108 +325,126 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Orders */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}>
-          <Card className="card-luxury">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5 text-luxury-gold" />
+          <Card className="border-2 border-slate-200 shadow-lg bg-white">
+            <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100 p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-slate-900 text-lg sm:text-xl">
+                <ShoppingCart className="h-5 w-5 text-emerald-600" />
                 Recent Orders
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               {stats.recentOrders.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {stats.recentOrders.map((order, index) => (
                     <motion.div
                       key={order.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.8 + index * 0.1 }}
-                      className="flex items-center justify-between p-3 bg-luxury-cream/50 rounded-lg hover:bg-luxury-cream/70 transition-colors"
+                      className="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl hover:from-slate-100 hover:to-slate-200 transition-all duration-200 border border-slate-200"
                     >
-                      <div>
-                        <p className="font-medium text-luxury-navy">#{order.order_number}</p>
-                        <p className="text-sm text-luxury-charcoal">{order.shipping_name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-slate-900 text-sm sm:text-base">#{order.order_number}</p>
+                        <p className="text-xs sm:text-sm text-slate-600 truncate">{order.shipping_name}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-luxury-navy">{formatCurrency(order.total_amount)}</p>
+                      <div className="text-right ml-4">
+                        <p className="font-bold text-slate-900 text-sm sm:text-base">
+                          {formatCurrency(order.total_amount)}
+                        </p>
                         <Badge
-                          className={
+                          className={`text-xs ${
                             order.status === "pending"
-                              ? "bg-orange-100 text-orange-800"
+                              ? "bg-amber-100 text-amber-800"
                               : order.status === "processing"
                                 ? "bg-blue-100 text-blue-800"
                                 : order.status === "shipped"
                                   ? "bg-purple-100 text-purple-800"
-                                  : "bg-green-100 text-green-800"
-                          }
+                                  : "bg-emerald-100 text-emerald-800"
+                          }`}
                         >
                           {order.status}
                         </Badge>
                       </div>
                     </motion.div>
                   ))}
-                  <Button variant="outline" className="w-full bg-transparent" asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full hover:bg-primary hover:text-white transition-colors bg-transparent"
+                    asChild
+                  >
                     <Link href="/admin/orders">View All Orders</Link>
                   </Button>
                 </div>
               ) : (
-                <p className="text-luxury-charcoal text-center py-8">No recent orders</p>
+                <div className="text-center py-8">
+                  <ShoppingCart className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                  <p className="text-slate-600">No recent orders</p>
+                </div>
               )}
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Recent Bookings */}
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}>
-          <Card className="card-luxury">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-luxury-gold" />
+          <Card className="border-2 border-slate-200 shadow-lg bg-white">
+            <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100 p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-slate-900 text-lg sm:text-xl">
+                <Calendar className="h-5 w-5 text-purple-600" />
                 Recent Bookings
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               {stats.recentBookings.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {stats.recentBookings.map((booking, index) => (
                     <motion.div
                       key={booking.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.8 + index * 0.1 }}
-                      className="flex items-center justify-between p-3 bg-luxury-cream/50 rounded-lg hover:bg-luxury-cream/70 transition-colors"
+                      className="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl hover:from-slate-100 hover:to-slate-200 transition-all duration-200 border border-slate-200"
                     >
-                      <div>
-                        <p className="font-medium text-luxury-navy">#{booking.booking_reference}</p>
-                        <p className="text-sm text-luxury-charcoal">{booking.guest_name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-slate-900 text-sm sm:text-base">
+                          #{booking.booking_reference}
+                        </p>
+                        <p className="text-xs sm:text-sm text-slate-600 truncate">{booking.guest_name}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-luxury-navy">{formatCurrency(booking.total_amount)}</p>
+                      <div className="text-right ml-4">
+                        <p className="font-bold text-slate-900 text-sm sm:text-base">
+                          {formatCurrency(booking.total_amount)}
+                        </p>
                         <Badge
-                          className={
+                          className={`text-xs ${
                             booking.status === "pending"
-                              ? "bg-orange-100 text-orange-800"
+                              ? "bg-amber-100 text-amber-800"
                               : booking.status === "confirmed"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-emerald-100 text-emerald-800"
                                 : booking.status === "cancelled"
                                   ? "bg-red-100 text-red-800"
                                   : "bg-blue-100 text-blue-800"
-                          }
+                          }`}
                         >
                           {booking.status}
                         </Badge>
                       </div>
                     </motion.div>
                   ))}
-                  <Button variant="outline" className="w-full bg-transparent" asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full hover:bg-primary hover:text-white transition-colors bg-transparent"
+                    asChild
+                  >
                     <Link href="/admin/bookings">View All Bookings</Link>
                   </Button>
                 </div>
               ) : (
-                <p className="text-luxury-charcoal text-center py-8">No recent bookings</p>
+                <div className="text-center py-8">
+                  <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                  <p className="text-slate-600">No recent bookings</p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -381,34 +452,53 @@ export default function AdminDashboard() {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }}>
-        <Card className="card-luxury">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+        <Card className="border-2 border-slate-200 shadow-lg bg-white">
+          <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100 p-4 sm:p-6">
+            <CardTitle className="text-slate-900 font-serif text-lg sm:text-xl">Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button className="btn-luxury" asChild>
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <Button
+                className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                asChild
+              >
                 <Link href="/admin/products/new">
-                  <Package className="h-4 w-4 mr-2" />
-                  Add Product
+                  <Plus className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Add Product</span>
+                  <span className="sm:hidden">Add</span>
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button
+                variant="outline"
+                className="hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 transition-colors bg-transparent"
+                asChild
+              >
                 <Link href="/admin/orders">
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  Manage Orders
+                  <span className="hidden sm:inline">Manage Orders</span>
+                  <span className="sm:hidden">Orders</span>
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button
+                variant="outline"
+                className="hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 transition-colors bg-transparent"
+                asChild
+              >
                 <Link href="/admin/bookings">
                   <Calendar className="h-4 w-4 mr-2" />
-                  Manage Bookings
+                  <span className="hidden sm:inline">Manage Bookings</span>
+                  <span className="sm:hidden">Bookings</span>
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button
+                variant="outline"
+                className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors bg-transparent"
+                asChild
+              >
                 <Link href="/admin/users">
                   <Users className="h-4 w-4 mr-2" />
-                  Manage Users
+                  <span className="hidden sm:inline">Manage Users</span>
+                  <span className="sm:hidden">Users</span>
                 </Link>
               </Button>
             </div>

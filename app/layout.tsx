@@ -10,6 +10,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Suspense } from "react"
 import { safeMetadataBase } from "@/lib/utils/metadata"
 import { ThemeProvider } from "next-themes"
+import { ErrorBoundary } from "@/components/error-boundary"
+import { AnalyticsProvider } from "@/components/analytics-provider"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -125,20 +127,46 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="//vercel.live" />
         <link rel="dns-prefetch" href="//vitals.vercel-insights.com" />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                    page_path: window.location.pathname,
+                  });
+                `,
+              }}
+            />
+          </>
+        )}
       </head>
       <body className="font-sans bg-background text-foreground min-h-screen transition-colors duration-300">
         <Suspense fallback={null}>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange={false}>
-            <AuthProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  {children}
-                  <Analytics />
-                  <SpeedInsights />
-                </WishlistProvider>
-              </CartProvider>
-            </AuthProvider>
-          </ThemeProvider>
+          <ErrorBoundary>
+            <AnalyticsProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem={false}
+                disableTransitionOnChange={false}
+              >
+                <AuthProvider>
+                  <CartProvider>
+                    <WishlistProvider>
+                      {children}
+                      <Analytics />
+                      <SpeedInsights />
+                    </WishlistProvider>
+                  </CartProvider>
+                </AuthProvider>
+              </ThemeProvider>
+            </AnalyticsProvider>
+          </ErrorBoundary>
         </Suspense>
       </body>
     </html>
