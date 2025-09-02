@@ -10,49 +10,42 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import { EnhancedNavigation } from "@/components/enhanced-navigation"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
-import { VideoCarouselHero } from "@/components/video-carousel-hero"
+import { ImageCarouselHero } from "@/components/image-carousel-hero"
 import { StructuredData } from "@/components/structured-data"
 import { LazyLoadWrapper } from "@/components/lazy-load-wrapper"
 
-const heroVideos = [
+const heroImages = [
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/uSlp-xr3zBP8lXR1SMwW6h/public/video2.mp4",
     poster: "/luxury-real-estate-exterior.png",
     title: "Luxury Real Estate",
     subtitle: "Discover premium properties and exclusive investment opportunities in prime locations",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/9ZegVuzzfVAextXiyyFx2w/public/video3.mp4",
     poster: "/modern-interior.png",
     title: "Modern Interiors",
     subtitle: "Experience sophisticated design and contemporary luxury living spaces",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/tKGZJFOS96klOq8lOmq4Uo/public/video4.mp4",
     poster: "/luxury-amenities-pool.png",
     title: "Premium Amenities",
     subtitle: "Indulge in world-class facilities and exclusive luxury amenities",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/ItXhS5i8c4HH1Qg67JVrEy/public/video5.mp4",
     poster: "/business-office-space.png",
     title: "Executive Spaces",
     subtitle: "Professional environments designed for success and productivity",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/A9TGfgDzmNJeLHdjY9YBK_/public/video6.mp4",
     poster: "/luxury-resort-suite.png",
     title: "Resort Living",
     subtitle: "Experience the ultimate in luxury hospitality and comfort",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/PnAbaYvNZkxh5ZPXHTrYao/public/video7.mp4",
     poster: "/investment-opportunity.png",
     title: "Investment Opportunities",
     subtitle: "Secure your future with premium real estate investments",
   },
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/git-blob/prj_sFe0MjZow9r7oWcqzsmKEOLgrrVb/7Lc-Lh0f0H__2NeVCpJlZ-/public/video8.mp4",
     poster: "/luxury-lifestyle.png",
     title: "Luxury Lifestyle",
     subtitle: "Embrace the finest things in life with our exclusive collection",
@@ -268,8 +261,8 @@ export default function HomePage() {
 
       <EnhancedNavigation />
 
-      <VideoCarouselHero
-        videos={heroVideos}
+      <ImageCarouselHero
+        images={heroImages}
         primaryCTA={{
           text: "Explore Collection",
           href: "#featured-categories",
