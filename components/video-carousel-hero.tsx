@@ -33,17 +33,10 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
   const [videoError, setVideoError] = useState(true) // Start with error state for better fallback
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [videoProgress, setVideoProgress] = useState(0)
-  const [isClient, setIsClient] = useState(false)
 
   const currentVideo = videos[currentVideoIndex]
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isClient) return
-
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
     setPrefersReducedMotion(mediaQuery.matches)
 
@@ -56,7 +49,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
     return () => {
       mediaQuery.removeEventListener("change", handleMediaQueryChange)
     }
-  }, [isClient])
+  }, [])
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -70,7 +63,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
 
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !isClient) return
+    if (!video) return
 
     // Reset states
     setVideoError(true) // Start with error state
@@ -78,24 +71,27 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
     setVideoProgress(0)
     setShowVideo(true) // Always show the section
 
+    // Simple video loading attempt
     const loadVideo = async () => {
       try {
         video.src = currentVideo.src
         video.poster = currentVideo.poster
         video.muted = true
         video.playsInline = true
-        video.preload = "none"
+        video.preload = "metadata"
 
+        // Set a reasonable timeout for video loading
         const loadTimeout = setTimeout(() => {
           setVideoError(true)
           setIsTransitioning(false)
-        }, 5000)
+        }, 10000)
 
         video.addEventListener(
           "loadeddata",
           () => {
             clearTimeout(loadTimeout)
             setVideoError(false)
+            // Try to play the video
             video
               .play()
               .then(() => {
@@ -127,7 +123,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
     }
 
     loadVideo()
-  }, [currentVideoIndex, currentVideo, isClient])
+  }, [currentVideoIndex, currentVideo])
 
   useEffect(() => {
     const video = videoRef.current
@@ -202,15 +198,15 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
                 sizes="100vw"
               />
 
-              {isClient && !videoError && (
+              {!videoError && (
                 <video
                   ref={videoRef}
                   className="absolute inset-0 w-full h-full object-cover"
-                  autoPlay={false}
+                  autoPlay
                   muted
                   loop={false}
                   playsInline
-                  preload="none"
+                  preload="metadata"
                   onError={() => setVideoError(true)}
                   controls={false}
                 >
@@ -321,7 +317,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
       </div>
 
       {/* Play/Pause Button - only show when video is available */}
-      {isClient && !videoError && (
+      {!videoError && (
         <motion.button
           onClick={togglePlayPause}
           className="absolute bottom-6 right-6 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors z-20"
@@ -336,7 +332,7 @@ export function VideoCarouselHero({ videos, primaryCTA, secondaryCTA }: VideoCar
       )}
 
       {/* Progress Bar - only show when video is playing */}
-      {isClient && !videoError && isPlaying && (
+      {!videoError && isPlaying && (
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30 z-20">
           <motion.div
             className="h-full bg-primary"

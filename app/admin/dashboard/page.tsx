@@ -6,87 +6,51 @@ import { Button } from "@/components/ui/button"
 import { Users, Package, ShoppingCart, DollarSign, Plus, AlertTriangle, TrendingUp, Calendar, Bell } from "lucide-react"
 import Link from "next/link"
 
-/* Added dynamic export to prevent static generation issues */
-export const dynamic = "force-dynamic"
-
 async function getAdminStats() {
-  try {
-    const supabase = await createServerClient()
+  const supabase = createServerClient()
 
-    /* Added null check and error handling for getUser */
-    let user = null
-    try {
-      if (supabase?.auth?.getUser) {
-        const {
-          data: { user: authUser },
-        } = await supabase.auth.getUser()
-        user = authUser
-      }
-    } catch (error) {
-      console.warn("Error getting user in admin dashboard:", error)
-      redirect("/auth/login")
-    }
-
-    if (!user) {
-      redirect("/auth/login")
-    }
-
-    // Check if user is admin
-    const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [
-      "talktostevenson@gmail.com",
-    ]
-    if (!adminEmails.includes(user.email!)) {
-      redirect("/unauthorized")
-    }
-
-    /* Wrapped all database queries in try-catch to prevent build failures */
-    try {
-      const [
-        { count: totalUsers },
-        { count: totalProducts },
-        { count: totalOrders },
-        { data: recentOrders },
-        { data: lowStockProducts },
-        { count: pendingOrders },
-        { data: revenueData },
-      ] = await Promise.all([
-        supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("products").select("*", { count: "exact", head: true }),
-        supabase.from("orders").select("*", { count: "exact", head: true }),
-        supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(5),
-        supabase.from("products").select("name, stock_quantity, low_stock_threshold").lte("stock_quantity", 5).limit(5),
-        supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("orders").select("total_amount, created_at").eq("payment_status", "completed"),
-      ])
-
-      // Calculate total revenue
-      const totalRevenue = revenueData?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0
-
-      return {
-        totalUsers: totalUsers || 0,
-        totalProducts: totalProducts || 0,
-        totalOrders: totalOrders || 0,
-        totalRevenue,
-        recentOrders: recentOrders || [],
-        lowStockProducts: lowStockProducts || [],
-        pendingOrdersCount: pendingOrders || 0,
-      }
-    } catch (error) {
-      console.warn("Error fetching admin stats:", error)
-      // Return default values to prevent build failure
-      return {
-        totalUsers: 0,
-        totalProducts: 0,
-        totalOrders: 0,
-        totalRevenue: 0,
-        recentOrders: [],
-        lowStockProducts: [],
-        pendingOrdersCount: 0,
-      }
-    }
-  } catch (error) {
-    console.error("Critical error in getAdminStats:", error)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
     redirect("/auth/login")
+  }
+
+  // Check if user is admin
+  const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || ["talktostevenson@gmail.com"]
+  if (!adminEmails.includes(user.email!)) {
+    redirect("/unauthorized")
+  }
+
+  const [
+    { count: totalUsers },
+    { count: totalProducts },
+    { count: totalOrders },
+    { data: recentOrders },
+    { data: lowStockProducts },
+    { data: pendingOrders },
+    { data: revenueData },
+  ] = await Promise.all([
+    supabase.from("profiles").select("*", { count: "exact", head: true }),
+    supabase.from("products").select("*", { count: "exact", head: true }),
+    supabase.from("orders").select("*", { count: "exact", head: true }),
+    supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(5),
+    supabase.from("products").select("name, stock_quantity, low_stock_threshold").lte("stock_quantity", 5).limit(5),
+    supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("orders").select("total_amount, created_at").eq("payment_status", "completed"),
+  ])
+
+  // Calculate total revenue
+  const totalRevenue = revenueData?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0
+
+  return {
+    totalUsers: totalUsers || 0,
+    totalProducts: totalProducts || 0,
+    totalOrders: totalOrders || 0,
+    totalRevenue,
+    recentOrders: recentOrders || [],
+    lowStockProducts: lowStockProducts || [],
+    pendingOrdersCount: pendingOrders || 0,
   }
 }
 

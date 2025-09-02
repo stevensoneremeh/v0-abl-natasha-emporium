@@ -36,23 +36,18 @@ export function VideoHero({
   secondaryCTA,
 }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(true)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [showVideo, setShowVideo] = useState(false)
-  const [videoError, setVideoError] = useState(true)
-  const [isClient, setIsClient] = useState(false)
+  const [showVideo, setShowVideo] = useState(true)
+  const [videoError, setVideoError] = useState(false)
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isClient) return
-
+    // Check for reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
     setPrefersReducedMotion(mediaQuery.matches)
 
+    // Check if mobile device
     const checkMobile = () => {
       setIsMobile(
         window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
@@ -72,11 +67,11 @@ export function VideoHero({
       mediaQuery.removeEventListener("change", handleMediaQueryChange)
       window.removeEventListener("resize", checkMobile)
     }
-  }, [isClient])
+  }, [])
 
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !isClient) return
+    if (!video) return
 
     if (prefersReducedMotion) {
       video.pause()
@@ -89,16 +84,15 @@ export function VideoHero({
           .then(() => {
             setIsPlaying(true)
             setShowVideo(true)
-            setVideoError(false)
           })
           .catch(() => {
+            // Autoplay failed, but still show video with manual controls
             setIsPlaying(false)
             setShowVideo(true)
-            setVideoError(false)
           })
       }
     }
-  }, [prefersReducedMotion, isClient])
+  }, [prefersReducedMotion])
 
   const handleVideoError = () => {
     setVideoError(true)
@@ -125,21 +119,23 @@ export function VideoHero({
 
   return (
     <section className="relative h-screen min-h-[600px] overflow-hidden">
+      {/* Video Background */}
       <div className="absolute inset-0">
-        {isClient && showVideo && !videoError ? (
+        {showVideo && !videoError ? (
           <video
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
-            autoPlay={false}
+            autoPlay={!isMobile} // Only autoplay on desktop
             muted
             loop
             playsInline
             poster={posterImage}
-            preload="none"
+            preload={isMobile ? "none" : "metadata"} // Optimize loading for mobile
             onError={handleVideoError}
-            controls={isMobile && !isPlaying}
+            controls={isMobile && !isPlaying} // Show controls on mobile when paused
           >
             <source src={videoSrc} type="video/mp4" />
+            {/* Fallback image if video fails to load */}
             <Image
               src={posterImage || "/placeholder.svg"}
               alt="Hero background"
@@ -153,6 +149,7 @@ export function VideoHero({
         )}
       </div>
 
+      {/* Overlay Images */}
       {overlayImages.map((image, index) => (
         <motion.div
           key={index}
@@ -171,8 +168,10 @@ export function VideoHero({
         </motion.div>
       ))}
 
+      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/40" />
 
+      {/* Content */}
       <div className="relative z-10 flex items-center justify-center h-full">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
           <motion.h1
@@ -220,6 +219,7 @@ export function VideoHero({
             </motion.div>
           </motion.div>
 
+          {/* Scroll indicator */}
           <motion.div
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
             initial={{ opacity: 0, y: 20 }}
@@ -241,7 +241,8 @@ export function VideoHero({
         </div>
       </div>
 
-      {isClient && showVideo && !videoError && (
+      {/* Video Controls */}
+      {showVideo && !videoError && (
         <motion.button
           onClick={togglePlayPause}
           className="absolute bottom-6 right-6 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors z-20"

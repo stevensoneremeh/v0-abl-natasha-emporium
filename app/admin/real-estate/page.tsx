@@ -7,66 +7,39 @@ import { Plus, Edit, Eye, MapPin, Bed, Bath, Square } from "lucide-react"
 import Link from "next/link"
 import { formatCurrency } from "@/lib/utils/currency"
 
-export const dynamic = "force-dynamic"
-
 async function getRealEstateProperties() {
-  try {
-    const supabase = createServerClient()
+  const supabase = createServerClient()
 
-    if (!supabase) {
-      console.error("Supabase client not properly initialized")
-      return []
-    }
+  const { data: properties, error } = await supabase
+    .from("listings_real_estate")
+    .select("*")
+    .order("created_at", { ascending: false })
 
-    const { data: properties, error } = await supabase
-      .from("listings_real_estate")
-      .select("*")
-      .order("created_at", { ascending: false })
-
-    if (error) {
-      console.error("Error fetching real estate properties:", error)
-      return []
-    }
-
-    return properties || []
-  } catch (error) {
-    console.error("Error in getRealEstateProperties:", error)
+  if (error) {
+    console.error("Error fetching real estate properties:", error)
     return []
   }
+
+  return properties || []
 }
 
 async function checkAdminAccess() {
-  try {
-    const supabase = createServerClient()
+  const supabase = createServerClient()
 
-    if (!supabase || !supabase.auth || typeof supabase.auth.getUser !== "function") {
-      console.error("Supabase client not properly initialized")
-      redirect("/auth/login")
-      return null
-    }
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      redirect("/auth/login")
-      return null
-    }
-
-    const { data: profile } = await supabase.from("profiles").select("is_admin, role").eq("id", user.id).single()
-
-    if (!profile?.is_admin && profile?.role !== "admin") {
-      redirect("/unauthorized")
-      return null
-    }
-
-    return user
-  } catch (error) {
-    console.error("Error checking admin access:", error)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
     redirect("/auth/login")
-    return null
   }
+
+  const { data: profile } = await supabase.from("profiles").select("is_admin, role").eq("id", user.id).single()
+
+  if (!profile?.is_admin && profile?.role !== "admin") {
+    redirect("/unauthorized")
+  }
+
+  return user
 }
 
 function getListingTypeColor(type: string) {

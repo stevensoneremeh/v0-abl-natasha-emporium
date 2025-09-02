@@ -1,77 +1,38 @@
 import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
+import { createServerClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { User, ShoppingCart, Heart, Settings } from "lucide-react"
 import Link from "next/link"
 
-export const dynamic = "force-dynamic"
-
 async function getUserStats() {
-  try {
-    const supabase = await createClient()
+  const supabase = createServerClient()
 
-    if (!supabase || !supabase.auth || typeof supabase.auth.getUser !== "function") {
-      console.error("Supabase client not properly initialized")
-      return {
-        user: null,
-        totalOrders: 0,
-        wishlistItems: 0,
-        recentOrders: [],
-      }
-    }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    redirect("/auth/login")
+  }
 
-    let user = null
-    try {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser()
-      user = authUser
-    } catch (authError) {
-      console.error("Error getting user:", authError)
-      return {
-        user: null,
-        totalOrders: 0,
-        wishlistItems: 0,
-        recentOrders: [],
-      }
-    }
+  // Get user stats
+  const [{ count: totalOrders }, { count: wishlistItems }, { data: recentOrders }] = await Promise.all([
+    supabase.from("orders").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase.from("wishlist_items").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(3),
+  ])
 
-    if (!user) {
-      redirect("/auth/login")
-    }
-
-    // Get user stats with error handling
-    const [{ count: totalOrders }, { count: wishlistItems }, { data: recentOrders }] = await Promise.all([
-      supabase.from("orders").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-      supabase.from("wishlist_items").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-      supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(3),
-    ])
-
-    return {
-      user,
-      totalOrders: totalOrders || 0,
-      wishlistItems: wishlistItems || 0,
-      recentOrders: recentOrders || [],
-    }
-  } catch (error) {
-    console.error("Error fetching user stats:", error)
-    return {
-      user: null,
-      totalOrders: 0,
-      wishlistItems: 0,
-      recentOrders: [],
-    }
+  return {
+    user,
+    totalOrders: totalOrders || 0,
+    wishlistItems: wishlistItems || 0,
+    recentOrders: recentOrders || [],
   }
 }
 
 export default async function UserDashboard() {
   const stats = await getUserStats()
-
-  if (!stats.user) {
-    redirect("/auth/login")
-  }
 
   return (
     <div className="space-y-8">
